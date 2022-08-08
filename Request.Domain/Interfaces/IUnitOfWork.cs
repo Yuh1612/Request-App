@@ -19,7 +19,7 @@ namespace Request.Domain.Interfaces
 
         Task BeginTransaction();
 
-        Task CommitTransaction(bool IsAuthorize = true);
+        Task CommitTransaction();
 
         Task RollbackTransaction();
     }
