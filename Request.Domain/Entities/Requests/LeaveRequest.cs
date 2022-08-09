@@ -10,7 +10,9 @@ namespace Request.Domain.Entities.Requests
         {
             this.States = new HashSet<State>();
         }
+        public Guid RequestTypeId { get; set; }
         public virtual RequestType RequestType { get; set; }
+        public Guid RequestorId { get; set; }
         public virtual User Requestor { get; set; }
         public DateTime DayOffStart { get; set; }
         public DateTime DayOffEnd { get; set; }
