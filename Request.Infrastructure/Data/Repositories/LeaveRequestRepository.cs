@@ -1,4 +1,4 @@
-﻿using Request.Domain.Entities.Users;
+﻿using Request.Domain.Entities.Requests;
 using Request.Domain.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Request.Infrastructure.Data.Repositories
 {
-    public class UserRepository : GenericRepository<User>, IUserRepository
+    public class LeaveRequestRepository : GenericRepository<LeaveRequest>, ILeaveRequestRepository
     {
-        public UserRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public LeaveRequestRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
     }

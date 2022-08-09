@@ -1,4 +1,8 @@
-﻿using System;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Request.Domain.Entities.Requests;
+using Request.Domain.Entities.Users;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +18,6 @@ namespace Request.Infrastructure.Data
         {
             _mediator = mediator;
         }
-
         public DbSet<User> Users { get; set; }
 
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
