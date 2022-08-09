@@ -10,5 +10,6 @@ namespace Request.Domain.Entities.Requests
     public class RequestType : Entity
     {
         public string Name { get; set; }
+        public string Description { get; set; }
     }
 }
