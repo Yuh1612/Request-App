@@ -13,12 +13,12 @@ using System.Text.Json;
 
 namespace EventBusRabbitMQ
 {
-    public class EventBusRabbitMQ : IEventBus, IDisposable
+    public class EventBusRabbitMQServices : IEventBus, IDisposable
     {
         private const string BROKER_NAME = "test";
 
         private readonly IRabbitMQPersistentConnection _persistentConnection;
-        private readonly ILogger<EventBusRabbitMQ> _logger;
+        private readonly ILogger<EventBusRabbitMQServices> _logger;
         private readonly IEventBusSubscriptionsManager _subsManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly int _retryCount;
@@ -26,7 +26,7 @@ namespace EventBusRabbitMQ
         private IModel _consumerChannel;
         private string _queueName;
 
-        public EventBusRabbitMQ(IRabbitMQPersistentConnection persistentConnection, ILogger<EventBusRabbitMQ> logger,
+        public EventBusRabbitMQServices(IRabbitMQPersistentConnection persistentConnection, ILogger<EventBusRabbitMQServices> logger,
             IEventBusSubscriptionsManager subsManager, IServiceProvider serviceProvider, string queueName, int retryCount)
         {
             _persistentConnection = persistentConnection;
