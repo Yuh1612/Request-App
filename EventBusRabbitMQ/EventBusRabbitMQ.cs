@@ -1,6 +1,7 @@
 ﻿using EventBus;
 using EventBus.Abstractions;
 using EventBus.Events;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
@@ -20,19 +21,19 @@ namespace EventBusRabbitMQ
         private readonly IRabbitMQPersistentConnection _persistentConnection;
         private readonly ILogger<EventBusRabbitMQServices> _logger;
         private readonly IEventBusSubscriptionsManager _subsManager;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly int _retryCount;
 
         private IModel _consumerChannel;
         private string _queueName;
 
         public EventBusRabbitMQServices(IRabbitMQPersistentConnection persistentConnection, ILogger<EventBusRabbitMQServices> logger,
-            IEventBusSubscriptionsManager subsManager, IServiceProvider serviceProvider, string queueName, int retryCount)
+            IEventBusSubscriptionsManager subsManager, IServiceScopeFactory serviceScopeFactory, string queueName, int retryCount)
         {
             _persistentConnection = persistentConnection;
             _logger = logger;
             _subsManager = subsManager;
-            _serviceProvider = serviceProvider;
+            _serviceScopeFactory = serviceScopeFactory;
             _queueName = queueName;
             _retryCount = retryCount;
             _consumerChannel = CreateConsumerChannel();
@@ -121,18 +122,21 @@ namespace EventBusRabbitMQ
 
             if (_subsManager.HasSubscriptionsForEvent(eventName))
             {
-                var subscriptions = _subsManager.GetHandlersForEvent(eventName);
-                foreach (var subscription in subscriptions)
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var handler = _serviceProvider.GetService(subscription);
+                    var subscriptions = _subsManager.GetHandlersForEvent(eventName);
+                    foreach (var subscription in subscriptions)
+                    {
+                        var handler = scope.ServiceProvider.GetService(subscription);
 
-                    if (handler == null) continue;
-                    var eventType = _subsManager.GetEventTypeByName(eventName);
-                    var integrationEvent = JsonSerializer.Deserialize(message, eventType, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-                    var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
+                        if (handler == null) continue;
+                        var eventType = _subsManager.GetEventTypeByName(eventName);
+                        var integrationEvent = JsonSerializer.Deserialize(message, eventType, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+                        var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
 
-                    await Task.Yield();
-                    await (Task)concreteType.GetMethod("Handle").Invoke(handler, new object[] { integrationEvent });
+                        await Task.Yield();
+                        await (Task)concreteType.GetMethod("Handle").Invoke(handler, new object[] { integrationEvent });
+                    }
                 }
             }
             else
