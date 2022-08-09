@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace EventBusRabbitMQ
+namespace EventBus
 {
     public interface IRabbitMQPersistentConnection : IDisposable
     {
