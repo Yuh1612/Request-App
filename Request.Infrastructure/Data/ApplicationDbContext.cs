@@ -1,12 +1,8 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Request.Domain.Entities.Requests;
 using Request.Domain.Entities.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Request.Infrastructure.Data
 {
@@ -14,10 +10,15 @@ namespace Request.Infrastructure.Data
     {
         private readonly IMediator _mediator;
 
-        public ApplicationDbContext(IMediator mediator)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            _mediator = mediator;
         }
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IMediator mediator) : base(options)
+        {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
         public DbSet<User> Users { get; set; }
 
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
@@ -28,7 +29,6 @@ namespace Request.Infrastructure.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"server=192.168.2.231;database=Intern_RequestModule;user id=sa;password=vStation123;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,6 +43,50 @@ namespace Request.Infrastructure.Data
         {
             await SaveChangesAsync();
             await _mediator.DispatchDomainEventsAsync(this);
+        }
+    }
+
+    public class ApplicationDbContextDesignFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+    {
+        public ApplicationDbContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseSqlServer(@"server=192.168.2.231;database=Intern_RequestModule;user id=sa;password=vStation123;");
+
+            return new ApplicationDbContext(optionsBuilder.Options, new NoMediator());
+        }
+
+        private class NoMediator : IMediator
+        {
+            public IAsyncEnumerable<TResponse> CreateStream<TResponse>(IStreamRequest<TResponse> request, CancellationToken cancellationToken = default)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IAsyncEnumerable<object?> CreateStream(object request, CancellationToken cancellationToken = default)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task Publish(object notification, CancellationToken cancellationToken = default)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : INotification
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<object?> Send(object request, CancellationToken cancellationToken = default)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }
