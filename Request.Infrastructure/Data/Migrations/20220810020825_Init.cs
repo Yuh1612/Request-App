@@ -5,21 +5,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Request.Infrastructure.Data.Migrations
 {
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "RequestTypes",
+                name: "Statuses",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RequestTypes", x => x.Id);
+                    table.PrimaryKey("PK_Statuses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -41,7 +42,6 @@ namespace Request.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RequestTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RequestorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DayOffStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DayOffEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -53,12 +53,6 @@ namespace Request.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_LeaveRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LeaveRequests_RequestTypes_RequestTypeId",
-                        column: x => x.RequestTypeId,
-                        principalTable: "RequestTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_LeaveRequests_Users_RequestorId",
                         column: x => x.RequestorId,
                         principalTable: "Users",
@@ -67,7 +61,7 @@ namespace Request.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "States",
+                name: "Stages",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -78,14 +72,14 @@ namespace Request.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_States", x => x.Id);
+                    table.PrimaryKey("PK_Stages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_States_LeaveRequests_LeaveRequestId",
+                        name: "FK_Stages_LeaveRequests_LeaveRequestId",
                         column: x => x.LeaveRequestId,
                         principalTable: "LeaveRequests",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_States_Users_UserId",
+                        name: "FK_Stages_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -97,31 +91,26 @@ namespace Request.Infrastructure.Data.Migrations
                 column: "RequestorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LeaveRequests_RequestTypeId",
-                table: "LeaveRequests",
-                column: "RequestTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_States_LeaveRequestId",
-                table: "States",
+                name: "IX_Stages_LeaveRequestId",
+                table: "Stages",
                 column: "LeaveRequestId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_States_UserId",
-                table: "States",
+                name: "IX_Stages_UserId",
+                table: "Stages",
                 column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "States");
+                name: "Stages");
+
+            migrationBuilder.DropTable(
+                name: "Statuses");
 
             migrationBuilder.DropTable(
                 name: "LeaveRequests");
-
-            migrationBuilder.DropTable(
-                name: "RequestTypes");
 
             migrationBuilder.DropTable(
                 name: "Users");

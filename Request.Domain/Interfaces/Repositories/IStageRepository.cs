@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Request.Domain.Interfaces.Repositories
 {
-    public interface IRequestTypeRepository : IGenericRepository<RequestType>
+    public interface IStageRepository : IGenericRepository<Stage>
     {
     }
 }

@@ -8,7 +8,7 @@ namespace Request.Domain.Entities.Requests
 {
     public partial class LeaveRequest
     {
-        public LeaveRequest(Guid requestTypeId,
+        public LeaveRequest(
             Guid requestorId,
             DateTime dayOffStart, 
             DateTime dayOffEnd, 
@@ -16,20 +16,19 @@ namespace Request.Domain.Entities.Requests
             DateTime compensationDayEnd)
         {
             this.RequestorId = requestorId;
-            this.RequestTypeId = requestTypeId;
             this.DayOffStart = dayOffStart;
             this.DayOffEnd = dayOffEnd;
             this.CompensationDayStart = compensationDayStart;
             this.CompensationDayEnd = compensationDayEnd;
         }
 
-        public void AddState(State state)
+        public void AddState(Stage state)
         {
             if (this.States.Any(x => x.Id == state.Id)) return;
             this.States.Add(state);
         }
 
-        public void RemoveState(State state)
+        public void RemoveState(Stage state)
         {
             if (!this.States.Any(x => x.Id == state.Id)) return;
             this.States.Remove(state);
