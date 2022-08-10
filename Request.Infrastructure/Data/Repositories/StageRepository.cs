@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Request.Infrastructure.Data.Repositories
 {
-    public class RequestTypeRepository : GenericRepository<RequestType>, IRequestTypeRepository
+    public class StageRepository : GenericRepository<Stage>, IStageRepository
     {
-        public RequestTypeRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public StageRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
     }

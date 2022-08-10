@@ -12,8 +12,8 @@ using Request.Infrastructure.Data;
 namespace Request.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220809025414_init")]
-    partial class init
+    [Migration("20220810020825_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -45,40 +45,17 @@ namespace Request.Infrastructure.Data.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("RequestTypeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("RequestorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RequestTypeId");
 
                     b.HasIndex("RequestorId");
 
                     b.ToTable("LeaveRequests");
                 });
 
-            modelBuilder.Entity("Request.Domain.Entities.Requests.RequestType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RequestTypes");
-                });
-
-            modelBuilder.Entity("Request.Domain.Entities.Requests.State", b =>
+            modelBuilder.Entity("Request.Domain.Entities.Requests.Stage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -103,7 +80,29 @@ namespace Request.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("States");
+                    b.ToTable("Stages");
+                });
+
+            modelBuilder.Entity("Request.Domain.Entities.Requests.Status", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Statuses");
                 });
 
             modelBuilder.Entity("Request.Domain.Entities.Users.User", b =>
@@ -131,24 +130,16 @@ namespace Request.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Request.Domain.Entities.Requests.LeaveRequest", b =>
                 {
-                    b.HasOne("Request.Domain.Entities.Requests.RequestType", "RequestType")
-                        .WithMany()
-                        .HasForeignKey("RequestTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Request.Domain.Entities.Users.User", "Requestor")
                         .WithMany("LeaveRequests")
                         .HasForeignKey("RequestorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("RequestType");
-
                     b.Navigation("Requestor");
                 });
 
-            modelBuilder.Entity("Request.Domain.Entities.Requests.State", b =>
+            modelBuilder.Entity("Request.Domain.Entities.Requests.Stage", b =>
                 {
                     b.HasOne("Request.Domain.Entities.Requests.LeaveRequest", "LeaveRequest")
                         .WithMany("States")

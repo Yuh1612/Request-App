@@ -9,7 +9,7 @@ namespace Request.Domain.Entities.Users
         public User()
         {
             this.LeaveRequests = new HashSet<LeaveRequest>();
-            this.States = new HashSet<State>();
+            this.States = new HashSet<Stage>();
         }
         [Required]
         [StringLength(200)]
@@ -18,6 +18,6 @@ namespace Request.Domain.Entities.Users
         [StringLength(200)]
         public string? Email { get; set; }
         public virtual ICollection<LeaveRequest> LeaveRequests { get; set; }
-        public virtual ICollection<State> States { get; set; }
+        public virtual ICollection<Stage> States { get; set; }
     }
 }

@@ -20,12 +20,9 @@ namespace Request.Infrastructure.Data
         }
 
         public DbSet<User> Users { get; set; }
-
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
-
-        public DbSet<State> States { get; set; }
-
-        public DbSet<RequestType> RequestTypes { get; set; }
+        public DbSet<Stage> Stages { get; set; }
+        public DbSet<Status> Statuses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -35,8 +32,8 @@ namespace Request.Infrastructure.Data
         {
             modelBuilder.Entity<User>().HasQueryFilter(p => !p.IsDelete);
             modelBuilder.Entity<LeaveRequest>().HasQueryFilter(p => !p.IsDelete);
-            modelBuilder.Entity<RequestType>().HasQueryFilter(p => !p.IsDelete);
-            modelBuilder.Entity<State>().HasQueryFilter(p => !p.IsDelete);
+            modelBuilder.Entity<Stage>().HasQueryFilter(p => !p.IsDelete);
+            modelBuilder.Entity<Status>().HasQueryFilter(p => !p.IsDelete);
         }
 
         public async Task SaveEntitiesAsync()
