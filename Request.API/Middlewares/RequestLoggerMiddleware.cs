@@ -33,12 +33,12 @@
                 }
                 else
                 {
-                    if(context.Response?.StatusCode >= 400 && context.Response?.StatusCode < 500)
+                    if (context.Response?.StatusCode >= 400 && context.Response?.StatusCode < 500)
                     {
                         _logger.LogWarning("Request {method} {url} => {statusCode}",
                             context.Request?.Method,
                             context.Request?.Path.Value,
-                            context.Response?.StatusCode); 
+                            context.Response?.StatusCode);
                     }
                     else
                     {

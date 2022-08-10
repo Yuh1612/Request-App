@@ -1,9 +1,4 @@
 ﻿using Request.Domain.Interfaces.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Request.Domain.Interfaces
 {
@@ -12,7 +7,7 @@ namespace Request.Domain.Interfaces
         IUserRepository userRepository { get; }
 
         ILeaveRequestRepository leaveRequestRepository { get; }
-        IStageRepository stageRepository { get;  }
+        IStageRepository stageRepository { get; }
 
         Task SaveChangeAsync();
 

@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Request.Domain.Entities.Requests
+﻿namespace Request.Domain.Entities.Requests
 {
     public partial class LeaveRequest
     {
         public LeaveRequest(
             Guid requestorId,
-            DateTime dayOffStart, 
-            DateTime dayOffEnd, 
-            DateTime compensationDayStart, 
+            DateTime dayOffStart,
+            DateTime dayOffEnd,
+            DateTime compensationDayStart,
             DateTime compensationDayEnd)
         {
             this.RequestorId = requestorId;
@@ -22,17 +16,16 @@ namespace Request.Domain.Entities.Requests
             this.CompensationDayEnd = compensationDayEnd;
         }
 
-        public void AddState(Stage state)
+        public void AddState(Stage stage)
         {
-            if (this.States.Any(x => x.Id == state.Id)) return;
-            this.States.Add(state);
+            if (this.Stages.Any(x => x.Id == stage.Id)) return;
+            this.Stages.Add(stage);
         }
 
-        public void RemoveState(Stage state)
+        public void RemoveState(Stage stage)
         {
-            if (!this.States.Any(x => x.Id == state.Id)) return;
-            this.States.Remove(state);
+            if (!this.Stages.Any(x => x.Id == stage.Id)) return;
+            this.Stages.Remove(stage);
         }
-
     }
 }
