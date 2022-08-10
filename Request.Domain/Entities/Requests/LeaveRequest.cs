@@ -8,7 +8,7 @@ namespace Request.Domain.Entities.Requests
     {
         public LeaveRequest()
         {
-            this.States = new HashSet<Stage>();
+            this.Stages = new HashSet<Stage>();
         }
         public Guid RequestorId { get; set; }
         public virtual User Requestor { get; set; }
@@ -18,8 +18,7 @@ namespace Request.Domain.Entities.Requests
         public DateTime DayOffEnd { get; set; }
         public DateTime CompensationDayStart { get; set; }
         public DateTime CompensationDayEnd { get; set; }
-        public virtual ICollection<Stage> States { get; set; }
-
+        public virtual ICollection<Stage> Stages { get; set; }
 
     }
 }
