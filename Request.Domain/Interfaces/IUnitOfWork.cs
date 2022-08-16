@@ -5,7 +5,6 @@ namespace Request.Domain.Interfaces
     public interface IUnitOfWork
     {
         IUserRepository userRepository { get; }
-
         ILeaveRequestRepository leaveRequestRepository { get; }
         IStageRepository stageRepository { get; }
 
