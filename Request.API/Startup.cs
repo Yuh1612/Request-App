@@ -99,6 +99,7 @@ namespace Request.API
         {
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddMediatR(typeof(UpdateRequestCommand).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(CreateRequestCommand).GetTypeInfo().Assembly);
         }
 
         private void RegisterUnitOfWork(IServiceCollection services)
