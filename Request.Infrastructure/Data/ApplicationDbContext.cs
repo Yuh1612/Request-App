@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Request.Domain.Entities.Requests;
 using Request.Domain.Entities.Users;
+using System.Data;
+using System.Data.Common;
 
 namespace Request.Infrastructure.Data
 {
@@ -40,6 +42,15 @@ namespace Request.Infrastructure.Data
         {
             await SaveChangesAsync();
             await _mediator.DispatchDomainEventsAsync(this);
+        }
+        public DbConnection GetConnection()
+        {
+            DbConnection _connection = Database.GetDbConnection();
+            if (_connection.State == ConnectionState.Closed)
+            {
+                _connection.Open();
+            }
+            return _connection;
         }
     }
 

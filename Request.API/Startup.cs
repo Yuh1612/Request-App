@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Request.API.Applications.Queries;
 using Request.Domain.Interfaces;
 using Request.Domain.Interfaces.Repositories;
 using Request.Infrastructure.Data;
@@ -30,6 +31,8 @@ namespace Request.API
             RegisterUnitOfWork(services);
 
             RegisterMediators(services);
+
+            services.AddScoped<IRequestQueries, RequestQueries>();
         }
 
         private void RegisterDbContext(IServiceCollection services)
