@@ -6,7 +6,8 @@ namespace Request.API.Applications.Commands
     [DataContract]
     public class UpdateRequestCommand : IRequest<bool>
     {
-        
+        [DataMember]
+        public Guid Id { get; set; }
         [DataMember]
         public Guid RequestorId { get; set; }
         [DataMember]
@@ -17,6 +18,10 @@ namespace Request.API.Applications.Commands
         public DateTime CompensationDayStart { get; set; }
         [DataMember]
         public DateTime CompensationDayEnd { get; set; }
+        [DataMember]
+        public Guid StatusId { get; set; }
+        [DataMember]
+        public string Message { get; set; }
         public UpdateRequestCommand()
         {
 

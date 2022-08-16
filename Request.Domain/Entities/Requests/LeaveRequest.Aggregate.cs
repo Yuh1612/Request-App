@@ -7,13 +7,17 @@
             DateTime dayOffStart,
             DateTime dayOffEnd,
             DateTime compensationDayStart,
-            DateTime compensationDayEnd)
+            DateTime compensationDayEnd,
+            Guid statusId,
+            string message)
         {
             this.RequestorId = requestorId;
             this.DayOffStart = dayOffStart;
             this.DayOffEnd = dayOffEnd;
             this.CompensationDayStart = compensationDayStart;
             this.CompensationDayEnd = compensationDayEnd;
+            this.StatusId = statusId;
+            this.Message = message;
         }
 
         public void AddState(Stage stage)

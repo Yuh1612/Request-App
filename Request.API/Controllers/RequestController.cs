@@ -17,6 +17,15 @@ namespace Request.API.Controllers
             _logger = logger;
         }
 
+
+        [HttpPut]
+        public async Task<ActionResult<string>> UpdateRequest([FromBody] UpdateRequestCommand updateRequestCommand)
+        {
+            await _mediator.Send(updateRequestCommand);
+            return Ok();
+
+       
+
         [HttpDelete]
         public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
         {

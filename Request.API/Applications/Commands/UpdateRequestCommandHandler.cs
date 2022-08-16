@@ -8,10 +8,12 @@ namespace Request.API.Applications.Commands
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UpdateRequestCommandHandler> _logger;
 
-        public UpdateRequestCommandHandler(IMediator mediator,
+        public UpdateRequestCommandHandler(
             IUnitOfWork unitOfWork,
             ILogger<UpdateRequestCommandHandler> logger)
         {
+            _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<bool> Handle(UpdateRequestCommand request, CancellationToken cancellationToken)
@@ -19,12 +21,13 @@ namespace Request.API.Applications.Commands
             try
             {
                 await _unitOfWork.BeginTransaction();
-                await _unitOfWork.leaveRequestRepository.InsertAsync(
-                    new Domain.Entities.Requests.LeaveRequest(request.RequestorId,
-                    request.DayOffStart,
-                    request.DayOffEnd,
-                    request.CompensationDayStart,
-                    request.CompensationDayEnd));
+                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id);
+                if (leaveRequest == null) throw new ArgumentNullException();
+                leaveRequest.DayOffStart = request.DayOffStart;
+                leaveRequest.DayOffEnd = request.DayOffEnd;
+                leaveRequest.CompensationDayStart = request.CompensationDayStart;
+                leaveRequest.CompensationDayEnd = request.CompensationDayEnd;
+                leaveRequest.Message = request.Message;
                 await _unitOfWork.CommitTransaction();
                 return true;
             }
