@@ -3,37 +3,32 @@ using Request.Domain.Interfaces;
 
 namespace Request.API.Applications.Commands
 {
-    public class UpdateRequestCommandHandler : IRequestHandler<UpdateRequestCommand, bool>
+    public class DeleteRequestCommandHandler : IRequestHandler<DeleteRequestCommand, bool>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<UpdateRequestCommandHandler> _logger;
+        private readonly ILogger<DeleteRequestCommandHandler> _logger;
 
-        public UpdateRequestCommandHandler(
-            IUnitOfWork unitOfWork,
-            ILogger<UpdateRequestCommandHandler> logger)
+        public DeleteRequestCommandHandler(IUnitOfWork unitOfWork, ILogger<DeleteRequestCommandHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
-        public async Task<bool> Handle(UpdateRequestCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(DeleteRequestCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 await _unitOfWork.BeginTransaction();
                 var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id);
                 if (leaveRequest == null) throw new ArgumentNullException();
-                leaveRequest.DayOffStart = request.DayOffStart;
-                leaveRequest.DayOffEnd = request.DayOffEnd;
-                leaveRequest.CompensationDayStart = request.CompensationDayStart;
-                leaveRequest.CompensationDayEnd = request.CompensationDayEnd;
-                leaveRequest.Message = request.Message;
+                _unitOfWork.leaveRequestRepository.Remove(leaveRequest);
                 await _unitOfWork.CommitTransaction();
                 return true;
             }
             catch (Exception)
             {
                 await _unitOfWork.RollbackTransaction();
+                _logger.LogError("Cannot delete this request");
                 return false;
             }
         }
