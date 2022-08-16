@@ -48,15 +48,16 @@ namespace Request.API
             {
                 var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
+                var rabbitMQ = Configuration.GetSection("RabbitMQ");
                 var factory = new ConnectionFactory()
                 {
-                    HostName = "192.168.2.98",
+                    HostName = rabbitMQ.GetSection("Hostname").Value,
                     DispatchConsumersAsync = true,
-                    UserName = "linh",
-                    Password = "123456",
+                    UserName = rabbitMQ.GetSection("Username").Value,
+                    Password = rabbitMQ.GetSection("Password").Value,
                 };
 
-                var retryCount = 5;
+                var retryCount = Int32.Parse(Configuration.GetSection("EventBusRetryCount").Value);
 
                 return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
             });
