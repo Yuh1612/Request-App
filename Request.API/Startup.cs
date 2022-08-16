@@ -11,6 +11,7 @@ using Request.Infrastructure.Data;
 using Request.Infrastructure.Data.Repositories;
 using System.Reflection;
 using RabbitMQ.Client;
+using Request.API.Applications.Commands;
 
 namespace Request.API
 {
@@ -78,7 +79,6 @@ namespace Request.API
             });
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
-
             services.AddTransient<IIntegrationEventHandler<UserCreatedIntergrationEvent>, UserCreatedIntergrationEventHandler>();
         }
 
@@ -93,6 +93,7 @@ namespace Request.API
         private void RegisterMediators(IServiceCollection services)
         {
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddMediatR(typeof(UpdateRequestCommand).GetTypeInfo().Assembly);
         }
 
         private void RegisterUnitOfWork(IServiceCollection services)
