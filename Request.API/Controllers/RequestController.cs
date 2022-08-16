@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Request.API.Applications.Commands;
 
 namespace Request.API.Controllers
 {
@@ -6,9 +8,28 @@ namespace Request.API.Controllers
     [Route("api/requests")]
     public class RequestController : ControllerBase
     {
-        public IActionResult Index()
+        private readonly IMediator _mediator;
+        private readonly ILogger<RequestController> _logger;
+
+        public RequestController(IMediator mediator, ILogger<RequestController> logger)
         {
-            return Ok();
+            _mediator = mediator;
+            _logger = logger;
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
+        {
+            bool commandResult = false;
+
+            if (command.Id != Guid.Empty)
+            {
+                _logger.LogInformation("----- Sending command: {command})", nameof(command));
+
+                commandResult = await _mediator.Send(command);
+            }
+
+            return commandResult ? Ok() : BadRequest();
         }
     }
 }

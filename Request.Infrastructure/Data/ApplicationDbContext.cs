@@ -43,6 +43,7 @@ namespace Request.Infrastructure.Data
             await SaveChangesAsync();
             await _mediator.DispatchDomainEventsAsync(this);
         }
+
         public DbConnection GetConnection()
         {
             DbConnection _connection = Database.GetDbConnection();

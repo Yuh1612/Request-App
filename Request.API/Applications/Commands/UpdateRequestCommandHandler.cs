@@ -3,8 +3,7 @@ using Request.Domain.Interfaces;
 
 namespace Request.API.Applications.Commands
 {
-    public class UpdateRequestCommandHandler
-        : IRequestHandler<UpdateRequestCommand, bool>
+    public class UpdateRequestCommandHandler : IRequestHandler<UpdateRequestCommand, bool>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UpdateRequestCommandHandler> _logger;
