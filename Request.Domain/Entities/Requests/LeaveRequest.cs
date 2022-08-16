@@ -18,6 +18,7 @@ namespace Request.Domain.Entities.Requests
         public DateTime DayOffEnd { get; set; }
         public DateTime CompensationDayStart { get; set; }
         public DateTime CompensationDayEnd { get; set; }
+        public string Message { get; set; }
         public virtual ICollection<Stage> Stages { get; set; }
     }
 }
