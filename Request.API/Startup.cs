@@ -3,6 +3,7 @@ using EventBus;
 using EventBusRabbitMQ;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Request.API.Applications.Queries;
 using Request.API.IntegrationEvents.EventHandling;
 using Request.API.IntegrationEvents.Events;
 using Request.Domain.Interfaces;
@@ -37,6 +38,9 @@ namespace Request.API
             RegisterUnitOfWork(services);
 
             RegisterMediators(services);
+
+
+            services.AddScoped<IRequestQueries, RequestQueries>();
 
             RegisterEventBus(services);
 
@@ -80,6 +84,7 @@ namespace Request.API
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
             services.AddTransient<IIntegrationEventHandler<UserCreatedIntergrationEvent>, UserCreatedIntergrationEventHandler>();
+
         }
 
         private void RegisterDbContext(IServiceCollection services)
