@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Request.Domain.Interfaces;
 using Request.Domain.Interfaces.Repositories;
 using Request.Infrastructure.Data;
@@ -22,11 +23,21 @@ namespace Request.API
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
+            RegisterDbContext(services);
+
             RegisterRepositories(services);
 
             RegisterUnitOfWork(services);
 
             RegisterMediators(services);
+        }
+
+        private void RegisterDbContext(IServiceCollection services)
+        {
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetSection("ConnectionString").Value);
+            });
         }
 
         private void RegisterMediators(IServiceCollection services)
@@ -43,6 +54,7 @@ namespace Request.API
         {
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
+            services.AddScoped<IStageRepository, StageRepository>();
         }
 
         public void Configure(WebApplication app)
