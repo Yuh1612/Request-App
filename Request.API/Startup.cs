@@ -1,10 +1,16 @@
-﻿using MediatR;
+﻿using EventBus.Abstractions;
+using EventBus;
+using EventBusRabbitMQ;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Request.API.IntegrationEvents.EventHandling;
+using Request.API.IntegrationEvents.Events;
 using Request.Domain.Interfaces;
 using Request.Domain.Interfaces.Repositories;
 using Request.Infrastructure.Data;
 using Request.Infrastructure.Data.Repositories;
 using System.Reflection;
+using RabbitMQ.Client;
 
 namespace Request.API
 {
@@ -30,6 +36,49 @@ namespace Request.API
             RegisterUnitOfWork(services);
 
             RegisterMediators(services);
+
+            RegisterEventBus(services);
+
+            RegisterRabbitMQ(services);
+        }
+
+        private void RegisterRabbitMQ(IServiceCollection services)
+        {
+            services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+
+                var factory = new ConnectionFactory()
+                {
+                    HostName = "192.168.2.98",
+                    DispatchConsumersAsync = true,
+                    UserName = "linh",
+                    Password = "123456",
+                };
+
+                var retryCount = 5;
+
+                return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+            });
+        }
+
+        private void RegisterEventBus(IServiceCollection services)
+        {
+            services.AddSingleton<IEventBus, EventBusRabbitMQServices>(sp =>
+            {
+                var subscriptionClientName = "queue_test";
+                var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQServices>>();
+                var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+                var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+                var serviceScopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+                var retryCount = 5;
+
+                return new EventBusRabbitMQServices(rabbitMQPersistentConnection, logger, eventBusSubcriptionsManager, serviceScopeFactory, subscriptionClientName, retryCount);
+            });
+
+            services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+
+            services.AddTransient<IIntegrationEventHandler<UserCreatedIntergrationEvent>, UserCreatedIntergrationEventHandler>();
         }
 
         private void RegisterDbContext(IServiceCollection services)
@@ -65,11 +114,20 @@ namespace Request.API
                 app.UseSwaggerUI();
             }
 
+            ConfigureEventBus(app);
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
             app.MapControllers();
+        }
+
+        private void ConfigureEventBus(WebApplication app)
+        {
+            var eventBus = app.Services.GetRequiredService<IEventBus>();
+
+            eventBus.Subscribe<UserCreatedIntergrationEvent, IIntegrationEventHandler<UserCreatedIntergrationEvent>>();
         }
     }
 }
