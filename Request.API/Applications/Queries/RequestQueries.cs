@@ -14,13 +14,18 @@ namespace Request.API.Applications.Queries
             _dbContext = dbContext;
         }
 
-        public async Task<List<LeaveRequestReponse>> GetLeaveRequestByUserId(Guid id)
+        public async Task<List<LeaveRequestReponse>> GetLeaveRequestByUserId(string requestorId)
         {
             using var connection = _dbContext.GetConnection();
-            connection.Open();
 
-            string query = $@"SELECT *
-                    FROM dbo.LeaveRequestsn as r
+            string query = $@"SELECT r.Id,
+                    r.RequestorId,
+                    u.UserName as RequestorName,
+                    r.StatusId,
+                    s.Name as StatusName,
+                    r.CompensationDayStart,
+                    st.UserId
+                    FROM dbo.LeaveRequests as r
                     LEFT JOIN dbo.Statuses    AS s
                     ON (
                         r.StatusId  = s.Id
@@ -29,28 +34,28 @@ namespace Request.API.Applications.Queries
                     ON (
                         r.RequestorId	= u.Id
                     )
-					RIGHT JOIN dbo.Stages	AS st
+					LEFT JOIN dbo.Stages	AS st
                     ON (
                         r.Id		= st.LeaveRequestId
                     )
                     WHERE r.RequestorId = @requestorId";
-            var results = await connection.QueryAsync<LeaveRequest>(query, new
+            var results = await connection.QueryAsync<dynamic>(query, new
             {
-                requestorId = id
+                requestorId
             });
             return MapperLeaveRequests(results.ToList());
         }
-        public List<LeaveRequestReponse> MapperLeaveRequests(List<LeaveRequest> results)
+        public List<LeaveRequestReponse> MapperLeaveRequests(dynamic results)
         {
             List<LeaveRequestReponse> leaveRequests = new List<LeaveRequestReponse>();
             foreach (var item in results)
             {
                 LeaveRequestReponse leaveRequestReponse = new LeaveRequestReponse();
                 leaveRequestReponse.RequestorId = item.RequestorId;
-                leaveRequestReponse.RequestorName = item.Requestor.UserName;
+                leaveRequestReponse.RequestorName = item.RequestorName;
                 leaveRequestReponse.StatusId = item.StatusId;
-                leaveRequestReponse.StatusName = item.Status.Name;
-                leaveRequestReponse.Approver = item.Stages.First().UserId;
+                leaveRequestReponse.StatusName = item.StatusName;
+                leaveRequestReponse.Approver = item.UserId;
                 leaveRequestReponse.LeaveRequestName = item.CompensationDayStart.ToString() == null ? "Nghỉ phép" : "Nghỉ và làm bù";
                 leaveRequests.Add(leaveRequestReponse);
             }

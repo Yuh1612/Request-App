@@ -2,6 +2,6 @@
 {
     public interface IRequestQueries
     {
-        Task<List<LeaveRequestReponse>> GetLeaveRequestByUserId(Guid id);
+        Task<List<LeaveRequestReponse>> GetLeaveRequestByUserId(string id);
     }
 }
