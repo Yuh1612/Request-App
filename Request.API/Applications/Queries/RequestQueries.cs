@@ -54,7 +54,9 @@ namespace Request.API.Applications.Queries
                 leaveRequestReponse.ApproverId = item.Approver.Id;
                 leaveRequestReponse.ApproverName = item.Approver.UserName;
                 leaveRequestReponse.Name = item.Name;
-                leaveRequestReponse.StageName = item.Stages.First().Name;
+                leaveRequestReponse.StageName = item.Stages.Last().Name;
+                leaveRequestReponse.CreatedAt = item.CreatedAt;
+                leaveRequestReponse.UpdatedAt = item.UpdatedAt;
                 leaveRequests.Add(leaveRequestReponse);
             }
             return leaveRequests;

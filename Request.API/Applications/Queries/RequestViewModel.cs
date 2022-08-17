@@ -8,6 +8,8 @@
         public string Name { get; set; }
         public string ApproverName { get; set; }
         public string StageName { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
     }
 }
