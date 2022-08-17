@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Request.API.Applications.Queries;
+using System.Net;
 using Request.API.Applications.Commands;
 
 namespace Request.API.Controllers
@@ -10,11 +12,13 @@ namespace Request.API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<RequestController> _logger;
+        private readonly IRequestQueries _requestQueries;
 
-        public RequestController(IMediator mediator, ILogger<RequestController> logger)
+        public RequestController(IMediator mediator, ILogger<RequestController> logger, IRequestQueries requestQueries)
         {
             _mediator = mediator;
             _logger = logger;
+            _requestQueries = requestQueries;
         }
 
         [HttpPost]
@@ -29,6 +33,13 @@ namespace Request.API.Controllers
         {
             await _mediator.Send(updateRequestCommand);
             return Ok();
+        }
+        [HttpGet]
+        [Route("{userId}")]
+        [ProducesResponseType(typeof(IEnumerator<LeaveRequestReponse>), (int)HttpStatusCode.OK)]
+        public IActionResult GetLeaveRequests([FromRoute] Guid userId)
+        {
+            return Ok(_requestQueries.GetLeaveRequestByUserId(userId.ToString()).Result);
         }
 
         [HttpDelete("{id}")]
