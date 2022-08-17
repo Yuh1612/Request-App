@@ -49,6 +49,7 @@ namespace Request.API.Applications.Queries
             foreach (var item in results)
             {
                 LeaveRequestReponse leaveRequestReponse = new LeaveRequestReponse();
+                leaveRequestReponse.Id = item.Id;
                 leaveRequestReponse.StatusId = item.StatusId;
                 leaveRequestReponse.StatusName = item.Status.Name;
                 leaveRequestReponse.ApproverId = item.Approver.Id;
