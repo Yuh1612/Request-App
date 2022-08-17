@@ -46,11 +46,11 @@ namespace Request.API.Applications.Queries
             foreach (var item in results)
             {
                 LeaveRequestReponse leaveRequestReponse = new LeaveRequestReponse();
-                leaveRequestReponse.RequestorId = item.RequestorId;
+                //leaveRequestReponse.RequestorId = item.RequestorId;
                 leaveRequestReponse.RequestorName = item.Requestor.UserName;
                 leaveRequestReponse.StatusId = item.StatusId;
                 leaveRequestReponse.StatusName = item.Status.Name;
-                leaveRequestReponse.Approver = item.Stages.First().UserId;
+                //leaveRequestReponse.Approver = item.Stages.First().UserId;
                 leaveRequestReponse.LeaveRequestName = item.CompensationDayStart.ToString() == null ? "Nghỉ phép" : "Nghỉ và làm bù";
                 leaveRequests.Add(leaveRequestReponse);
             }

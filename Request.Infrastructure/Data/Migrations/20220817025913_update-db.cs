@@ -15,7 +15,7 @@ namespace Request.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -47,9 +47,9 @@ namespace Request.Infrastructure.Data.Migrations
                     StatusId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DayOffStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DayOffEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompensationDayStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompensationDayEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CompensationDayStart = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CompensationDayEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ApproverId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -82,6 +82,7 @@ namespace Request.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LeaveRequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)

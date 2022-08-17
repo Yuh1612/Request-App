@@ -6,11 +6,11 @@ namespace Request.Domain.Entities.Requests
 {
     public class Stage : Entity
     {
-        [AllowNull]
         public string Name { get; set; }
+
+        public string? Description { get; set; }
+
         public Guid? LeaveRequestId { get; set; }
         public virtual LeaveRequest LeaveRequest { get; set; }
-        public Guid? UserId { get; set; }
-        public virtual User User { get; set; }
     }
 }
