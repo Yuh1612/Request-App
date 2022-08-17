@@ -31,7 +31,6 @@ namespace Request.API.Applications.Commands
                         request.CompensationDayStart,
                         request.CompensationDayEnd,
                         request.StatusId,
-                        request.ApproverId,
                         request.Message));
                 return await _unitOfWork.CommitTransaction();
             }
