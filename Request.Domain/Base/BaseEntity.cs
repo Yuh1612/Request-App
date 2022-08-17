@@ -30,8 +30,13 @@ namespace Request.Domain.Base
         [NotMapped]
         private List<BaseDomainEvent> _events;
 
+        public Entity()
+        {
+            _events = new();
+        }
+
         [NotMapped]
-        public IReadOnlyList<BaseDomainEvent> Events => _events?.AsReadOnly();
+        public IReadOnlyList<BaseDomainEvent> Events => _events.AsReadOnly();
 
         protected void AddEvent(BaseDomainEvent @event)
         {
