@@ -96,7 +96,9 @@ namespace Request.API
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetSection("ConnectionString").Value);
+                options
+                    .UseLazyLoadingProxies()
+                    .UseSqlServer(Configuration.GetSection("ConnectionString").Value);
             });
         }
 
@@ -106,6 +108,7 @@ namespace Request.API
             services.AddMediatR(typeof(UpdateRequestCommand).GetTypeInfo().Assembly);
             services.AddMediatR(typeof(CreateRequestCommand).GetTypeInfo().Assembly);
             services.AddMediatR(typeof(DeleteRequestCommand).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(ApproveRequestCommand).GetTypeInfo().Assembly);
         }
 
         private void RegisterUnitOfWork(IServiceCollection services)
@@ -118,6 +121,7 @@ namespace Request.API
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
             services.AddScoped<IStageRepository, StageRepository>();
+            services.AddScoped<IStatusRepository, StatusRepository>();
         }
 
         public void Configure(WebApplication app)

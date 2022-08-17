@@ -1,5 +1,7 @@
-﻿using MediatR;
+﻿using API.Exceptions;
+using MediatR;
 using Request.Domain.Interfaces;
+using System.Net;
 
 namespace Request.API.Applications.Commands
 {
@@ -22,7 +24,7 @@ namespace Request.API.Applications.Commands
             {
                 await _unitOfWork.BeginTransaction();
                 var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id);
-                if (leaveRequest == null) throw new ArgumentNullException();
+                if (leaveRequest == null) throw new HttpResponseException(HttpStatusCode.NotFound);
                 leaveRequest.Update(request.DayOffStart,
                     request.DayOffEnd,
                     request.CompensationDayStart,
@@ -33,6 +35,7 @@ namespace Request.API.Applications.Commands
             catch (Exception)
             {
                 await _unitOfWork.RollbackTransaction();
+
                 return false;
             }
         }

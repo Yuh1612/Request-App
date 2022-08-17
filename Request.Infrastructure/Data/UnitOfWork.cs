@@ -18,17 +18,21 @@ namespace Request.Infrastructure.Data
 
         private IStageRepository _stageRepository;
 
+        private IStatusRepository _statusRepository;
+
         private readonly ApplicationDbContext _dbContext;
 
         public UnitOfWork(ApplicationDbContext dbContext,
             IUserRepository userRepository,
             ILeaveRequestRepository leaveRequestRepository,
-            IStageRepository stageRepository)
+            IStageRepository stageRepository,
+            IStatusRepository statusRepository)
         {
             _dbContext = dbContext;
             _userRepository = userRepository;
             _leaveRequestRepository = leaveRequestRepository;
             _stageRepository = stageRepository;
+            _statusRepository = statusRepository;
         }
 
         public IUserRepository userRepository => _userRepository;
@@ -36,6 +40,8 @@ namespace Request.Infrastructure.Data
         public ILeaveRequestRepository leaveRequestRepository => _leaveRequestRepository;
 
         public IStageRepository stageRepository => _stageRepository;
+
+        public IStatusRepository statusRepository => _statusRepository;
 
         public async Task BeginTransaction()
         {
