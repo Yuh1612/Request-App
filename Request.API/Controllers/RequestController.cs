@@ -22,13 +22,26 @@ namespace Request.API.Controllers
         }
 
         [HttpGet]
-        [Route("{userId}")]
-        [ProducesResponseType(typeof(IEnumerator<LeaveRequestReponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetLeaveRequests([FromRoute] Guid userId)
+        [Route("approver/{approverId}")]
+        [ProducesResponseType(typeof(List<LeaveRequestResponse>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetLeaveRequests([FromRoute] Guid approverId)
         {
-            return Ok(await _requestQueries.GetLeaveRequestByUserId(userId.ToString()));
+            return Ok(await _requestQueries.GetLeaveRequestByApproverId(approverId));
         }
-
+        [HttpGet]
+        [Route("{id}")]
+        [ProducesResponseType(typeof(LeaveRequestDetail), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetLeaveRequest([FromRoute] Guid id)
+        {
+            return Ok(await _requestQueries.GetLeaveRequest(id));
+        }
+        [HttpGet]
+        [Route("requestor/{requestorId}")]
+        [ProducesResponseType(typeof(List<LeaveRequestResponse>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetLeaveRequestByRequestorIds([FromRoute] Guid requestorId)
+        {
+            return Ok(await _requestQueries.GetLeaveRequestByRequestorId(requestorId));
+        }
         [HttpPost]
         public async Task<IActionResult> CreateRequest([FromBody] CreateRequestCommand command)
         {
@@ -48,8 +61,7 @@ namespace Request.API.Controllers
                 commandResult = await _mediator.Send(command);
             }
             return commandResult ? Ok() : BadRequest();
-        }
-
+         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
         {
@@ -73,5 +85,7 @@ namespace Request.API.Controllers
             }
             return commandResult ? Ok() : BadRequest();
         }
+        
+        
     }
 }

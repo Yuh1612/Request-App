@@ -35,6 +35,8 @@ namespace Request.API
             });
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.AddAutoMapper
+            (typeof(AutoMapperProfile).Assembly);
 
             RegisterDbContext(services);
 
