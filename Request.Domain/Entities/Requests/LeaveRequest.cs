@@ -13,7 +13,6 @@ namespace Request.Domain.Entities.Requests
         }
 
         public string Name { get; set; }
-
         public Guid? RequestorId { get; set; }
         public virtual User? Requestor { get; set; }
 
