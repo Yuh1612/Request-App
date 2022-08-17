@@ -12,7 +12,7 @@ using Request.Infrastructure.Data;
 namespace Request.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220817025913_update-db")]
+    [Migration("20220817032730_update-db")]
     partial class updatedb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -97,14 +97,9 @@ namespace Request.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("LeaveRequestId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Stages");
                 });
@@ -184,10 +179,6 @@ namespace Request.Infrastructure.Data.Migrations
                         .WithMany("Stages")
                         .HasForeignKey("LeaveRequestId");
 
-                    b.HasOne("Request.Domain.Entities.Users.User", null)
-                        .WithMany("States")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("LeaveRequest");
                 });
 
@@ -201,8 +192,6 @@ namespace Request.Infrastructure.Data.Migrations
                     b.Navigation("ApprovedLeaveRequests");
 
                     b.Navigation("LeaveRequests");
-
-                    b.Navigation("States");
                 });
 #pragma warning restore 612, 618
         }

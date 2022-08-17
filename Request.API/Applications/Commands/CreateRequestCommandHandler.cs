@@ -22,12 +22,15 @@ namespace Request.API.Applications.Commands
             {
                 await _unitOfWork.BeginTransaction();
                 await _unitOfWork.leaveRequestRepository.InsertAsync(
-                    new LeaveRequest(request.RequestorId,
+                    new LeaveRequest(
+                        request.Name,
+                        request.RequestorId,
                         request.DayOffStart,
                         request.DayOffEnd,
                         request.CompensationDayStart,
                         request.CompensationDayEnd,
                         request.StatusId,
+                        request.ApproverId,
                         request.Message));
                 await _unitOfWork.CommitTransaction();
                 return true;

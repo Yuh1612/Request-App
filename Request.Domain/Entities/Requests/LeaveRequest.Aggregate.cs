@@ -3,21 +3,25 @@
     public partial class LeaveRequest
     {
         public LeaveRequest(
+            string name,
             Guid requestorId,
             DateTime dayOffStart,
             DateTime dayOffEnd,
             DateTime compensationDayStart,
             DateTime compensationDayEnd,
             Guid statusId,
+            Guid approverId,
             string message)
         {
             this.Id = Guid.NewGuid();
+            this.Name = name;
             this.RequestorId = requestorId;
             this.DayOffStart = dayOffStart;
             this.DayOffEnd = dayOffEnd;
             this.CompensationDayStart = compensationDayStart;
             this.CompensationDayEnd = compensationDayEnd;
             this.StatusId = statusId;
+            this.ApproverId = approverId;
             this.Message = message;
         }
 
