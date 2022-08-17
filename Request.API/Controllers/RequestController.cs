@@ -43,7 +43,7 @@ namespace Request.API.Controllers
             return Ok(_requestQueries.GetLeaveRequestByUserId(userId.ToString()).Result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
         {
             bool commandResult = false;

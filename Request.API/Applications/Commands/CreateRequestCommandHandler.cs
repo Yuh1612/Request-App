@@ -1,6 +1,8 @@
-﻿using MediatR;
+﻿using API.Exceptions;
+using MediatR;
 using Request.Domain.Entities.Requests;
 using Request.Domain.Interfaces;
+using System.Net;
 
 namespace Request.API.Applications.Commands
 {
@@ -19,11 +21,27 @@ namespace Request.API.Applications.Commands
 
         public async Task<bool> Handle(CreateRequestCommand request, CancellationToken cancellationToken)
         {
+            if (request == null)
+            {
+                _logger.LogWarning("Requestor is null!");
+                throw new HttpResponseException(HttpStatusCode.NotFound, "Request is null!");
+            }
+            if (request.RequestorId == Guid.Empty)
+            {
+                _logger.LogWarning("Requestor is null!");
+                throw new HttpResponseException(HttpStatusCode.NotFound, "Requestor is null!");
+            }
+
+            if (request.ApproverId == Guid.Empty)
+            {
+                _logger.LogWarning("Approver is null!");
+                throw new HttpResponseException(HttpStatusCode.NotFound, "Approver is null!");
+            }
+
             try
             {
                 await _unitOfWork.BeginTransaction();
                 await _unitOfWork.leaveRequestRepository.InsertAsync(
-
                     new LeaveRequest(request.RequestorId,
                         request.ApproverId,
                         request.DayOffStart,
@@ -34,10 +52,11 @@ namespace Request.API.Applications.Commands
                         request.Message));
                 return await _unitOfWork.CommitTransaction();
             }
-            catch (Exception)
+            catch(Exception e)
             {
                 await _unitOfWork.RollbackTransaction();
-                return false;
+                _logger.LogError(e.Message);
+                throw new HttpResponseException(HttpStatusCode.BadRequest, "Something went wrong!");
             }
         }
     }
