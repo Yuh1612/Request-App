@@ -28,10 +28,16 @@ namespace Request.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ApproverId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CompensationDayEnd")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CompensationDayStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DayOffEnd")
@@ -47,13 +53,22 @@ namespace Request.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RequestorId")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("RequestorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("StatusId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ApproverId");
 
                     b.HasIndex("RequestorId");
 
@@ -137,17 +152,23 @@ namespace Request.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Request.Domain.Entities.Requests.LeaveRequest", b =>
                 {
+                    b.HasOne("Request.Domain.Entities.Users.User", "Approver")
+                        .WithMany("ApprovedLeaveRequests")
+                        .HasForeignKey("ApproverId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("Request.Domain.Entities.Users.User", "Requestor")
                         .WithMany("LeaveRequests")
                         .HasForeignKey("RequestorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Request.Domain.Entities.Requests.Status", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Approver");
 
                     b.Navigation("Requestor");
 
@@ -176,6 +197,8 @@ namespace Request.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Request.Domain.Entities.Users.User", b =>
                 {
+                    b.Navigation("ApprovedLeaveRequests");
+
                     b.Navigation("LeaveRequests");
 
                     b.Navigation("States");

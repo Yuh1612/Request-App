@@ -17,6 +17,13 @@ namespace Request.API.Controllers
             _logger = logger;
         }
 
+        [HttpPost]
+        public async Task<ActionResult<string>> CreateRequest([FromBody] CreateRequestCommand createRequestCommand)
+        {
+            await _mediator.Send(createRequestCommand);
+            return Ok();
+        }
+
         [HttpPut]
         public async Task<ActionResult<string>> UpdateRequest([FromBody] UpdateRequestCommand updateRequestCommand)
         {
@@ -24,15 +31,15 @@ namespace Request.API.Controllers
             return Ok();
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRequest([FromRoute] Guid id)
         {
             bool commandResult = false;
 
-            if (command.Id != Guid.Empty)
+            if (id != Guid.Empty)
             {
+                var command = new DeleteRequestCommand(id);
                 _logger.LogInformation("----- Sending command: {command})", nameof(command));
-
                 commandResult = await _mediator.Send(command);
             }
 

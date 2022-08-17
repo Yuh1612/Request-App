@@ -32,6 +32,18 @@ namespace Request.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<LeaveRequest>()
+                .HasOne(x => x.Requestor)
+                .WithMany(x => x.LeaveRequests)
+                .HasForeignKey(x => x.RequestorId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<LeaveRequest>()
+                .HasOne(x => x.Approver)
+                .WithMany(x => x.ApprovedLeaveRequests)
+                .HasForeignKey(x => x.ApproverId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<User>().HasQueryFilter(p => !p.IsDelete);
             modelBuilder.Entity<LeaveRequest>().HasQueryFilter(p => !p.IsDelete);
             modelBuilder.Entity<Stage>().HasQueryFilter(p => !p.IsDelete);
