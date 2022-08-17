@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using Request.Domain.Entities.Requests;
+using Request.Domain.Entities.Users;
 using Request.Infrastructure.Data;
+using System.Linq;
 
 namespace Request.API.Applications.Queries
 {
@@ -17,45 +19,42 @@ namespace Request.API.Applications.Queries
         {
             using var connection = _dbContext.GetConnection();
 
-            string query = $@"SELECT r.Id,
-                    r.RequestorId,
-                    u.UserName as RequestorName,
-                    r.StatusId,
-                    s.Name as StatusName,
-                    r.CompensationDayStart,
-                    st.UserId
+            string query = $@"SELECT *
                     FROM dbo.LeaveRequests as r
                     LEFT JOIN dbo.Statuses    AS s
                     ON (
                         r.StatusId  = s.Id
                     )
-                    LEFT JOIN dbo.Users	AS u
+					LEFT JOIN dbo.Users	AS u
                     ON (
-                        r.RequestorId	= u.Id
+                        r.ApproverId	= u.Id
                     )
-					LEFT JOIN dbo.Stages	AS st
+					INNER JOIN dbo.Stages	AS st
                     ON (
                         r.Id		= st.LeaveRequestId
-                    )
-                    WHERE r.RequestorId = @requestorId";
-            var results = await connection.QueryAsync<dynamic>(query, new
-            {
-                requestorId
-            });
-            return MapperLeaveRequests(results.ToList());
+                    )";
+            var results = await connection.QueryAsync<LeaveRequest, Status, User, Stage, LeaveRequest> (query,
+                (request, status, user, stage) => {
+                    request.Status = status;
+                    request.Approver = user;
+                    request.Stages = request.Stages ?? new List<Stage>();
+                    request.Stages.Add(stage);
+                    return request;
+                });
+            return MapperLeaveRequests(results.Where(c => c.RequestorId.ToString() == requestorId).ToList());
         }
-        public List<LeaveRequestReponse> MapperLeaveRequests(dynamic results)
+        public List<LeaveRequestReponse> MapperLeaveRequests(List<LeaveRequest> results)
         {
             List<LeaveRequestReponse> leaveRequests = new List<LeaveRequestReponse>();
             foreach (var item in results)
             {
                 LeaveRequestReponse leaveRequestReponse = new LeaveRequestReponse();
-                leaveRequestReponse.RequestorId = item.RequestorId;
-                leaveRequestReponse.RequestorName = item.RequestorName;
                 leaveRequestReponse.StatusId = item.StatusId;
-                leaveRequestReponse.StatusName = item.StatusName;
-                leaveRequestReponse.Approver = item.UserId;
-                leaveRequestReponse.LeaveRequestName = item.CompensationDayStart.ToString() == null ? "Nghỉ phép" : "Nghỉ và làm bù";
+                leaveRequestReponse.StatusName = item.Status.Name;
+                leaveRequestReponse.ApproverId = item.Approver.Id;
+                leaveRequestReponse.ApproverName = item.Approver.UserName;
+                leaveRequestReponse.Name = item.Name;
+                leaveRequestReponse.StageName = item.Stages.First().Name;
                 leaveRequests.Add(leaveRequestReponse);
             }
             return leaveRequests;

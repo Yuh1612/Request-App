@@ -2,11 +2,12 @@
 {
     public record LeaveRequestReponse
     {
-        public Guid RequestorId { get; set; }
-        public string RequestorName { get; set; }
         public Guid StatusId { get; set; }
         public string StatusName { get; set; }
-        public Guid? Approver { get; set; }
-        public string LeaveRequestName { get; set; }
+        public Guid? ApproverId { get; set; }
+        public string Name { get; set; }
+        public string ApproverName { get; set; }
+        public string StageName { get; set; }
+
     }
 }

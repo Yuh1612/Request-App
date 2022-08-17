@@ -36,8 +36,7 @@ namespace Request.API.Controllers
         }
         [HttpGet]
         [Route("{userId}")]
-        [HttpPut]
-        [ProducesResponseType(typeof(List<LeaveRequestReponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IEnumerator<LeaveRequestReponse>), (int)HttpStatusCode.OK)]
         public IActionResult GetLeaveRequests([FromRoute] Guid userId)
         {
             return Ok(_requestQueries.GetLeaveRequestByUserId(userId.ToString()).Result);
