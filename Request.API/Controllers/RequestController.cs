@@ -28,6 +28,7 @@ namespace Request.API.Controllers
         {
             return Ok(await _requestQueries.GetLeaveRequestByApproverId(approverId));
         }
+
         [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(typeof(LeaveRequestDetail), (int)HttpStatusCode.OK)]
@@ -35,6 +36,7 @@ namespace Request.API.Controllers
         {
             return Ok(await _requestQueries.GetLeaveRequest(id));
         }
+
         [HttpGet]
         [Route("requestor/{requestorId}")]
         [ProducesResponseType(typeof(List<LeaveRequestResponse>), (int)HttpStatusCode.OK)]
@@ -42,6 +44,7 @@ namespace Request.API.Controllers
         {
             return Ok(await _requestQueries.GetLeaveRequestByRequestorId(requestorId));
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateRequest([FromBody] CreateRequestCommand command)
         {
@@ -60,9 +63,9 @@ namespace Request.API.Controllers
                 commandResult = await _mediator.Send(command);
             }
             return commandResult ? Ok() : BadRequest();
-         }
-        [HttpDelete("{Id}")]
+        }
 
+        [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
         {
             bool commandResult = false;
@@ -85,7 +88,5 @@ namespace Request.API.Controllers
             }
             return commandResult ? Ok() : BadRequest();
         }
-        
-        
     }
 }
