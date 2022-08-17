@@ -12,7 +12,7 @@ using Request.Infrastructure.Data;
 namespace Request.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220817024727_update-db")]
+    [Migration("20220817025913_update-db")]
     partial class updatedb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,10 +33,10 @@ namespace Request.Infrastructure.Data.Migrations
                     b.Property<Guid?>("ApproverId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CompensationDayEnd")
+                    b.Property<DateTime?>("CompensationDayEnd")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CompensationDayStart")
+                    b.Property<DateTime?>("CompensationDayStart")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
@@ -52,7 +52,6 @@ namespace Request.Infrastructure.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Message")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -85,6 +84,9 @@ namespace Request.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
@@ -114,7 +116,6 @@ namespace Request.Infrastructure.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDelete")
@@ -183,13 +184,11 @@ namespace Request.Infrastructure.Data.Migrations
                         .WithMany("Stages")
                         .HasForeignKey("LeaveRequestId");
 
-                    b.HasOne("Request.Domain.Entities.Users.User", "User")
+                    b.HasOne("Request.Domain.Entities.Users.User", null)
                         .WithMany("States")
                         .HasForeignKey("UserId");
 
                     b.Navigation("LeaveRequest");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Request.Domain.Entities.Requests.LeaveRequest", b =>

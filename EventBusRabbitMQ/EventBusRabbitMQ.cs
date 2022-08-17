@@ -166,15 +166,15 @@ namespace EventBusRabbitMQ
                 .Or<SocketException>()
                 .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                 {
-                    _logger.LogWarning(ex, "Could not publish event: {EventId} after {Timeout}s ({ExceptionMessage})", @event.Id, $"{time.TotalSeconds:n1}", ex.Message);
+                    _logger.LogWarning(ex, "Could not publish event: {EventId} after {Timeout}s ({ExceptionMessage})", @event.EventId, $"{time.TotalSeconds:n1}", ex.Message);
                 });
 
             var eventName = @event.GetType().Name;
 
-            _logger.LogTrace("Creating RabbitMQ channel to publish event: {EventId} ({EventName})", @event.Id, eventName);
+            _logger.LogTrace("Creating RabbitMQ channel to publish event: {EventId} ({EventName})", @event.EventId, eventName);
 
             using var channel = _persistentConnection.CreateModel();
-            _logger.LogTrace("Declaring RabbitMQ exchange to publish event: {EventId}", @event.Id);
+            _logger.LogTrace("Declaring RabbitMQ exchange to publish event: {EventId}", @event.EventId);
 
             channel.ExchangeDeclare(exchange: BROKER_NAME, durable: true, autoDelete: true, type: "direct");
 
@@ -188,7 +188,7 @@ namespace EventBusRabbitMQ
                 var properties = channel.CreateBasicProperties();
                 properties.DeliveryMode = 2;
 
-                _logger.LogTrace("Publishing event to RabbitMQ: {EventId}", @event.Id);
+                _logger.LogTrace("Publishing event to RabbitMQ: {EventId}", @event.EventId);
 
                 channel.BasicPublish(
                     exchange: BROKER_NAME,
