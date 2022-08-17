@@ -16,21 +16,23 @@ namespace Request.API.Applications.Commands
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
+
         public async Task<bool> Handle(CreateRequestCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 await _unitOfWork.BeginTransaction();
                 await _unitOfWork.leaveRequestRepository.InsertAsync(
+
                     new LeaveRequest(request.RequestorId,
+                        request.ApproverId,
                         request.DayOffStart,
                         request.DayOffEnd,
                         request.CompensationDayStart,
                         request.CompensationDayEnd,
                         request.StatusId,
                         request.Message));
-                await _unitOfWork.CommitTransaction();
-                return true;
+                return await _unitOfWork.CommitTransaction();
             }
             catch (Exception)
             {

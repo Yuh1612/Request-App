@@ -7,28 +7,36 @@ namespace Request.API.Applications.Commands
     public class CreateRequestCommand : IRequest<bool>
     {
         [DataMember]
-        public Guid Id { get; set; }
-        [DataMember]
         public Guid RequestorId { get; set; }
+
+        [DataMember]
+        public Guid ApproverId { get; set; }
+
         [DataMember]
         public DateTime DayOffStart { get; set; }
+
         [DataMember]
         public DateTime DayOffEnd { get; set; }
+
         [DataMember]
-        public DateTime CompensationDayStart { get; set; }
+        public DateTime? CompensationDayStart { get; set; }
+
         [DataMember]
-        public DateTime CompensationDayEnd { get; set; }
+        public DateTime? CompensationDayEnd { get; set; }
+
         [DataMember]
         public Guid StatusId { get; set; }
+
         [DataMember]
-        public string Message { get; set; }
+        public string? Message { get; set; }
+
         public CreateRequestCommand()
         {
-
         }
+
         public CreateRequestCommand(
-            Guid id,
             Guid requesttorId,
+            Guid approverId,
             DateTime dayOffStart,
             DateTime dayOffEnd,
             DateTime compensationDayStart,
@@ -36,13 +44,14 @@ namespace Request.API.Applications.Commands
             Guid statusId,
             string message)
         {
-            Id = id;
             RequestorId = requesttorId;
+            ApproverId = approverId;
             DayOffStart = dayOffStart;
             DayOffEnd = dayOffEnd;
             CompensationDayStart = compensationDayStart;
             CompensationDayEnd = compensationDayEnd;
             StatusId = statusId;
+            ApproverId = approverId;
             Message = message;
         }
     }
