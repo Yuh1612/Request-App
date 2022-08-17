@@ -34,6 +34,7 @@ namespace Request.API.Controllers
             await _mediator.Send(updateRequestCommand);
             return Ok();
         }
+
         [HttpGet]
         [Route("{userId}")]
         [ProducesResponseType(typeof(IEnumerator<LeaveRequestReponse>), (int)HttpStatusCode.OK)]

@@ -13,6 +13,8 @@ using Request.Infrastructure.Data.Repositories;
 using System.Reflection;
 using RabbitMQ.Client;
 using Request.API.Applications.Commands;
+using API.Middleware;
+using API.Exceptions;
 
 namespace Request.API
 {
@@ -27,7 +29,10 @@ namespace Request.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<HttpResponseExceptionFilter>();
+            });
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
@@ -126,6 +131,8 @@ namespace Request.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            app.UseMiddleware<RequestLoggerMiddleware>();
 
             app.MapControllers();
         }
