@@ -30,6 +30,8 @@ namespace Request.API
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.AddAutoMapper
+            (typeof(AutoMapperProfile).Assembly);
 
             RegisterDbContext(services);
 
