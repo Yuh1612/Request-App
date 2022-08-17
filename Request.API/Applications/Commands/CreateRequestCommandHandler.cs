@@ -43,7 +43,6 @@ namespace Request.API.Applications.Commands
                 await _unitOfWork.BeginTransaction();
 
                 var leaveRequest = new LeaveRequest(request.RequestorId,
-
                         request.ApproverId,
                         request.DayOffStart,
                         request.DayOffEnd,
@@ -56,7 +55,7 @@ namespace Request.API.Applications.Commands
                 await _unitOfWork.leaveRequestRepository.InsertAsync(leaveRequest);
                 return await _unitOfWork.CommitTransaction();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 await _unitOfWork.RollbackTransaction();
                 _logger.LogError(e.Message);

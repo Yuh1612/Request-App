@@ -15,6 +15,9 @@ using RabbitMQ.Client;
 using Request.API.Applications.Commands;
 using API.Middleware;
 using API.Exceptions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Request.API
 {
@@ -50,7 +53,26 @@ namespace Request.API
 
             RegisterRabbitMQ(services);
 
+            RegisterAuth(services);
+
             services.AddScoped<IRequestQueries, RequestQueries>();
+        }
+
+        private void RegisterAuth(IServiceCollection services)
+        {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("SecretKey").Value)),
+
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
         }
 
         private void RegisterRabbitMQ(IServiceCollection services)
