@@ -26,9 +26,6 @@ namespace Request.API.Applications.Commands
         public DateTime? CompensationDayEnd { get; set; }
 
         [DataMember]
-        public Guid StatusId { get; set; }
-
-        [DataMember]
         public string? Message { get; set; }
 
         public CreateRequestCommand()
@@ -42,7 +39,6 @@ namespace Request.API.Applications.Commands
             DateTime dayOffEnd,
             DateTime compensationDayStart,
             DateTime compensationDayEnd,
-            Guid statusId,
             string message)
         {
             RequestorId = requesttorId;
@@ -51,8 +47,6 @@ namespace Request.API.Applications.Commands
             DayOffEnd = dayOffEnd;
             CompensationDayStart = compensationDayStart;
             CompensationDayEnd = compensationDayEnd;
-            StatusId = statusId;
-            ApproverId = approverId;
             Message = message;
         }
     }

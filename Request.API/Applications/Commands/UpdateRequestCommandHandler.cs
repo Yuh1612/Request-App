@@ -40,7 +40,7 @@ namespace Request.API.Applications.Commands
             {
                 await _unitOfWork.BeginTransaction();
                 var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id);
-                if (leaveRequest == null) throw new ArgumentNullException();
+                if (leaveRequest == null) throw new HttpResponseException(HttpStatusCode.NotFound);
                 leaveRequest.Update(request.DayOffStart,
                     request.DayOffEnd,
                     request.CompensationDayStart,
@@ -53,6 +53,7 @@ namespace Request.API.Applications.Commands
                 await _unitOfWork.RollbackTransaction();
                 _logger.LogError(e.Message);
                 throw new HttpResponseException(HttpStatusCode.BadRequest, "Something went wrong!");
+
             }
         }
     }

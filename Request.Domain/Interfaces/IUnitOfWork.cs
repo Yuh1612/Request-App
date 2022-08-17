@@ -8,6 +8,8 @@ namespace Request.Domain.Interfaces
         ILeaveRequestRepository leaveRequestRepository { get; }
         IStageRepository stageRepository { get; }
 
+        IStatusRepository statusRepository { get; }
+
         Task<bool> SaveChangeAsync();
 
         Task BeginTransaction();

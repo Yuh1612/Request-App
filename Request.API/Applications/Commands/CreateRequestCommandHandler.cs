@@ -41,15 +41,19 @@ namespace Request.API.Applications.Commands
             try
             {
                 await _unitOfWork.BeginTransaction();
-                await _unitOfWork.leaveRequestRepository.InsertAsync(
-                    new LeaveRequest(request.RequestorId,
+
+                var leaveRequest = new LeaveRequest(request.RequestorId,
+
                         request.ApproverId,
                         request.DayOffStart,
                         request.DayOffEnd,
                         request.CompensationDayStart,
                         request.CompensationDayEnd,
-                        request.StatusId,
-                        request.Message));
+                        request.Message);
+                var status = await _unitOfWork.statusRepository.GetStatusByName(StatusEnum.Waiting);
+                leaveRequest.UpdateStatus(status.Id);
+                leaveRequest.AddState(StageEnum.Process, "Chờ Minh Trí Lê");
+                await _unitOfWork.leaveRequestRepository.InsertAsync(leaveRequest);
                 return await _unitOfWork.CommitTransaction();
             }
             catch(Exception e)

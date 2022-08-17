@@ -9,7 +9,6 @@
             DateTime dayOffEnd,
             DateTime? compensationDayStart,
             DateTime? compensationDayEnd,
-            Guid statusId,
             string? message)
         {
             this.Id = Guid.NewGuid();
@@ -19,18 +18,18 @@
             this.DayOffEnd = dayOffEnd;
             this.CompensationDayStart = compensationDayStart;
             this.CompensationDayEnd = compensationDayEnd;
-            this.StatusId = statusId;
             this.ApproverId = approverId;
             this.Message = message;
 
             if (CompensationDayStart == null || CompensationDayEnd == null)
             {
-                this.Name = "Nghỉ phép";
+                this.Name = NameEnum.Leave;
             }
             else
             {
-                this.Name = "Nghỉ phép và làm bù";
+                this.Name = NameEnum.LeaveAndCompensate;
             }
+            this.Stages = new HashSet<Stage>();
         }
 
         public void Update(DateTime dayOffStart,
@@ -46,10 +45,19 @@
             this.Message = message ?? Message;
         }
 
-        public void AddState(Stage stage)
+        public void UpdateStatus(Guid statusId)
         {
-            if (this.Stages.Any(x => x.Id == stage.Id)) return;
+            this.StatusId = statusId;
+        }
+
+        public void AddStage(Stage stage)
+        {
             this.Stages.Add(stage);
+        }
+
+        public void AddState(string name, string? description)
+        {
+            AddStage(new Stage(name, description, this.Id));
         }
 
         public void RemoveState(Stage stage)
