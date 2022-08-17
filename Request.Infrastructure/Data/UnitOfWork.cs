@@ -52,15 +52,17 @@ namespace Request.Infrastructure.Data
             }
         }
 
-        public async Task CommitTransaction()
+        public async Task<bool> CommitTransaction()
         {
-            await _dbContext.SaveEntitiesAsync();
+            var result = await _dbContext.SaveEntitiesAsync();
 
-            if (_transaction == null) return;
+            if (_transaction == null) return false;
             await _transaction.CommitAsync();
 
             await _transaction.DisposeAsync();
             _transaction = null;
+
+            return result;
         }
 
         public void Dispose()
@@ -80,9 +82,9 @@ namespace Request.Infrastructure.Data
             _transaction = null;
         }
 
-        public async Task SaveChangeAsync()
+        public async Task<bool> SaveChangeAsync()
         {
-            await _dbContext.SaveEntitiesAsync();
+            return await _dbContext.SaveEntitiesAsync();
         }
     }
 }

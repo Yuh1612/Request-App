@@ -22,6 +22,7 @@ namespace Request.API.IntegrationEvents.EventHandling
             {
                 await _unitOfWork.BeginTransaction();
                 var user = new User(@event.Id, @event.UserName, @event.Email);
+                _logger.LogInformation("Create new user");
                 await _unitOfWork.userRepository.InsertAsync(user);
                 await _unitOfWork.CommitTransaction();
             }

@@ -8,11 +8,11 @@ namespace Request.Domain.Interfaces
         ILeaveRequestRepository leaveRequestRepository { get; }
         IStageRepository stageRepository { get; }
 
-        Task SaveChangeAsync();
+        Task<bool> SaveChangeAsync();
 
         Task BeginTransaction();
 
-        Task CommitTransaction();
+        Task<bool> CommitTransaction();
 
         Task RollbackTransaction();
     }

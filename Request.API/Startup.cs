@@ -39,12 +39,11 @@ namespace Request.API
 
             RegisterMediators(services);
 
-
-            services.AddScoped<IRequestQueries, RequestQueries>();
-
             RegisterEventBus(services);
 
             RegisterRabbitMQ(services);
+
+            services.AddScoped<IRequestQueries, RequestQueries>();
         }
 
         private void RegisterRabbitMQ(IServiceCollection services)
@@ -84,7 +83,6 @@ namespace Request.API
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
             services.AddTransient<IIntegrationEventHandler<UserCreatedIntergrationEvent>, UserCreatedIntergrationEventHandler>();
-
         }
 
         private void RegisterDbContext(IServiceCollection services)
