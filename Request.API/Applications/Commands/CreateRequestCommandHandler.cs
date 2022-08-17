@@ -23,6 +23,7 @@ namespace Request.API.Applications.Commands
             {
                 await _unitOfWork.BeginTransaction();
                 await _unitOfWork.leaveRequestRepository.InsertAsync(
+
                     new LeaveRequest(request.RequestorId,
                         request.ApproverId,
                         request.DayOffStart,
@@ -30,6 +31,7 @@ namespace Request.API.Applications.Commands
                         request.CompensationDayStart,
                         request.CompensationDayEnd,
                         request.StatusId,
+                        request.ApproverId,
                         request.Message));
                 return await _unitOfWork.CommitTransaction();
             }

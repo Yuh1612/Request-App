@@ -3,6 +3,7 @@
     public partial class LeaveRequest
     {
         public LeaveRequest(
+            string name,
             Guid requestorId,
             Guid approverId,
             DateTime dayOffStart,
@@ -13,6 +14,7 @@
             string? message)
         {
             this.Id = Guid.NewGuid();
+            this.Name = name;
             this.RequestorId = requestorId;
             this.ApproverId = approverId;
             this.DayOffStart = dayOffStart;
@@ -20,6 +22,7 @@
             this.CompensationDayStart = compensationDayStart;
             this.CompensationDayEnd = compensationDayEnd;
             this.StatusId = statusId;
+            this.ApproverId = approverId;
             this.Message = message;
 
             if (CompensationDayStart == null || CompensationDayEnd == null)

@@ -10,7 +10,6 @@ namespace Request.Domain.Entities.Users
         {
             this.LeaveRequests = new HashSet<LeaveRequest>();
             this.ApprovedLeaveRequests = new HashSet<LeaveRequest>();
-            this.States = new HashSet<Stage>();
         }
 
         [Required]
@@ -22,6 +21,5 @@ namespace Request.Domain.Entities.Users
 
         public virtual ICollection<LeaveRequest> LeaveRequests { get; set; }
         public virtual ICollection<LeaveRequest> ApprovedLeaveRequests { get; set; }
-        public virtual ICollection<Stage> States { get; set; }
     }
 }
