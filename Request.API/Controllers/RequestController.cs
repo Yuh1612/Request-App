@@ -21,39 +21,56 @@ namespace Request.API.Controllers
             _requestQueries = requestQueries;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<string>> CreateRequest([FromBody] CreateRequestCommand createRequestCommand)
-        {
-            await _mediator.Send(createRequestCommand);
-            return Ok();
-        }
-
-        [HttpPut]
-        public async Task<ActionResult<string>> UpdateRequest([FromBody] UpdateRequestCommand updateRequestCommand)
-        {
-            await _mediator.Send(updateRequestCommand);
-            return Ok();
-        }
-
         [HttpGet]
         [Route("{userId}")]
         [ProducesResponseType(typeof(IEnumerator<LeaveRequestReponse>), (int)HttpStatusCode.OK)]
-        public IActionResult GetLeaveRequests([FromRoute] Guid userId)
+        public async Task<IActionResult> GetLeaveRequests([FromRoute] Guid userId)
         {
-            return Ok(_requestQueries.GetLeaveRequestByUserId(userId.ToString()).Result);
+            return Ok(await _requestQueries.GetLeaveRequestByUserId(userId.ToString()));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRequest([FromBody] CreateRequestCommand command)
+        {
+            _logger.LogInformation("----- Sending command: {command})", nameof(command));
+            bool commandResult = await _mediator.Send(command);
+
+            return commandResult ? Ok() : BadRequest();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateRequest([FromBody] UpdateRequestCommand command)
+        {
+            bool commandResult = false;
+            if (command.Id != Guid.Empty)
+            {
+                _logger.LogInformation("----- Sending command: {command})", nameof(command));
+                commandResult = await _mediator.Send(command);
+            }
+            return commandResult ? Ok() : BadRequest();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
         {
             bool commandResult = false;
-
             if (command.Id != Guid.Empty)
             {
                 _logger.LogInformation("----- Sending command: {command})", nameof(command));
                 commandResult = await _mediator.Send(command);
             }
+            return commandResult ? Ok() : BadRequest();
+        }
 
+        [HttpPost("approve")]
+        public async Task<IActionResult> ApproveRequest([FromBody] ApproveRequestCommand command)
+        {
+            bool commandResult = false;
+            if (command.Id != Guid.Empty)
+            {
+                _logger.LogInformation("----- Sending command: {command})", nameof(command));
+                commandResult = await _mediator.Send(command);
+            }
             return commandResult ? Ok() : BadRequest();
         }
     }

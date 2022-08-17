@@ -1,4 +1,5 @@
-﻿using Request.Domain.Entities.Requests;
+﻿using Microsoft.EntityFrameworkCore;
+using Request.Domain.Entities.Requests;
 using Request.Domain.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,11 @@ namespace Request.Infrastructure.Data.Repositories
     {
         public StatusRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<Status> GetStatusByName(string name)
+        {
+            return await dbSet.Where(x => x.Name == name).FirstAsync();
         }
     }
 }

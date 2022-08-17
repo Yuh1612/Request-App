@@ -73,6 +73,7 @@ namespace Request.Infrastructure.Data
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseLazyLoadingProxies()
             .UseSqlServer(@"server=192.168.2.231;database=Intern_RequestModule;user id=sa;password=vStation123;");
 
             return new ApplicationDbContext(optionsBuilder.Options, new NoMediator());
