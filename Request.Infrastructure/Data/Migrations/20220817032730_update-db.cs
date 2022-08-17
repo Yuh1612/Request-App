@@ -84,7 +84,6 @@ namespace Request.Infrastructure.Data.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LeaveRequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -94,11 +93,6 @@ namespace Request.Infrastructure.Data.Migrations
                         name: "FK_Stages_LeaveRequests_LeaveRequestId",
                         column: x => x.LeaveRequestId,
                         principalTable: "LeaveRequests",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Stages_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -121,11 +115,6 @@ namespace Request.Infrastructure.Data.Migrations
                 name: "IX_Stages_LeaveRequestId",
                 table: "Stages",
                 column: "LeaveRequestId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Stages_UserId",
-                table: "Stages",
-                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

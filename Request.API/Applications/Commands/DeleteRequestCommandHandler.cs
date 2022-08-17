@@ -21,9 +21,9 @@ namespace Request.API.Applications.Commands
                 await _unitOfWork.BeginTransaction();
                 var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id);
                 if (leaveRequest == null) throw new ArgumentNullException();
-                _unitOfWork.leaveRequestRepository.Remove(leaveRequest);
-                await _unitOfWork.CommitTransaction();
-                return true;
+                leaveRequest.Delete();
+                _unitOfWork.leaveRequestRepository.Update(leaveRequest);
+                return await _unitOfWork.CommitTransaction();
             }
             catch (Exception)
             {

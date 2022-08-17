@@ -28,8 +28,7 @@ namespace Request.API.Applications.Commands
                     request.CompensationDayStart,
                     request.CompensationDayEnd,
                     request.Message);
-                await _unitOfWork.CommitTransaction();
-                return true;
+                return await _unitOfWork.CommitTransaction();
             }
             catch (Exception)
             {
