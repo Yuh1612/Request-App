@@ -31,15 +31,15 @@ namespace Request.API.Controllers
             return Ok();
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRequest([FromRoute] Guid id)
         {
             bool commandResult = false;
 
-            if (command.Id != Guid.Empty)
+            if (id != Guid.Empty)
             {
+                var command = new DeleteRequestCommand(id);
                 _logger.LogInformation("----- Sending command: {command})", nameof(command));
-
                 commandResult = await _mediator.Send(command);
             }
 
