@@ -50,10 +50,11 @@ namespace Request.Infrastructure.Data
             modelBuilder.Entity<Status>().HasQueryFilter(p => !p.IsDelete);
         }
 
-        public async Task SaveEntitiesAsync()
+        public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            await SaveChangesAsync();
+            await base.SaveChangesAsync(cancellationToken);
             await _mediator.DispatchDomainEventsAsync(this);
+            return true;
         }
 
         public DbConnection GetConnection()
