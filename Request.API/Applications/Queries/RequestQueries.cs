@@ -1,11 +1,10 @@
 ﻿using Dapper;
-using Microsoft.Data.SqlClient;
 using Request.Domain.Entities.Requests;
 using Request.Infrastructure.Data;
 
 namespace Request.API.Applications.Queries
 {
-    public class RequestQueries: IRequestQueries
+    public class RequestQueries : IRequestQueries
     {
         private readonly ApplicationDbContext _dbContext;
 

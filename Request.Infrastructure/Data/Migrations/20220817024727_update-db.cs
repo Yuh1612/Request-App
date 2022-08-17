@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Request.Infrastructure.Data.Migrations
 {
-    public partial class Init : Migration
+    public partial class updatedb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -41,22 +42,38 @@ namespace Request.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RequestorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RequestorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    StatusId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DayOffStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DayOffEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CompensationDayStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CompensationDayEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApproverId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LeaveRequests", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_LeaveRequests_Statuses_StatusId",
+                        column: x => x.StatusId,
+                        principalTable: "Statuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LeaveRequests_Users_ApproverId",
+                        column: x => x.ApproverId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_LeaveRequests_Users_RequestorId",
                         column: x => x.RequestorId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -85,9 +102,19 @@ namespace Request.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_LeaveRequests_ApproverId",
+                table: "LeaveRequests",
+                column: "ApproverId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LeaveRequests_RequestorId",
                 table: "LeaveRequests",
                 column: "RequestorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveRequests_StatusId",
+                table: "LeaveRequests",
+                column: "StatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Stages_LeaveRequestId",
@@ -106,10 +133,10 @@ namespace Request.Infrastructure.Data.Migrations
                 name: "Stages");
 
             migrationBuilder.DropTable(
-                name: "Statuses");
+                name: "LeaveRequests");
 
             migrationBuilder.DropTable(
-                name: "LeaveRequests");
+                name: "Statuses");
 
             migrationBuilder.DropTable(
                 name: "Users");

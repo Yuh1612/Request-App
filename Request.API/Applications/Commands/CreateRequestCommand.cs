@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Request.API.Applications.Commands
 {
     [DataContract]
-    public class UpdateRequestCommand : IRequest<bool>
+    public class CreateRequestCommand : IRequest<bool>
     {
         [DataMember]
         public Guid Id { get; set; }
@@ -22,21 +22,28 @@ namespace Request.API.Applications.Commands
         public Guid StatusId { get; set; }
         [DataMember]
         public string Message { get; set; }
-        public UpdateRequestCommand()
+        public CreateRequestCommand()
         {
 
         }
-        public UpdateRequestCommand(Guid requesttorId,
+        public CreateRequestCommand(
+            Guid id,
+            Guid requesttorId,
             DateTime dayOffStart,
             DateTime dayOffEnd,
             DateTime compensationDayStart,
-            DateTime compensationDayEnd)
+            DateTime compensationDayEnd,
+            Guid statusId,
+            string message)
         {
+            Id = id;
             RequestorId = requesttorId;
             DayOffStart = dayOffStart;
             DayOffEnd = dayOffEnd;
             CompensationDayStart = compensationDayStart;
             CompensationDayEnd = compensationDayEnd;
+            StatusId = statusId;
+            Message = message;
         }
     }
 }

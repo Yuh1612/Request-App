@@ -11,13 +11,17 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["Request.API/Request.API.csproj", "Request.API/"]
+COPY ["EventBusRabbitMQ/EventBusRabbitMQ.csproj", "EventBusRabbitMQ/"]
+COPY ["EventBus/EventBus.csproj", "EventBus/"]
+COPY ["Request.Domain/Request.Domain.csproj", "Request.Domain/"]
+COPY ["Request.Infrastructure/Request.Infrastructure.csproj", "Request.Infrastructure/"]
 RUN dotnet restore "Request.API/Request.API.csproj"
 COPY . .
 WORKDIR "/src/Request.API"
 RUN dotnet build "Request.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Request.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "Request.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

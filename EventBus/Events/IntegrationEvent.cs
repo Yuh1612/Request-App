@@ -6,19 +6,19 @@ namespace EventBus.Events
     {
         public IntegrationEvent()
         {
-            Id = Guid.NewGuid();
+            EventId = Guid.NewGuid();
             CreationDate = DateTime.UtcNow;
         }
 
         [JsonConstructor]
         public IntegrationEvent(Guid id, DateTime createDate)
         {
-            Id = id;
+            EventId = id;
             CreationDate = createDate;
         }
 
         [JsonInclude]
-        public Guid Id { get; private init; }
+        public Guid EventId { get; private init; }
 
         [JsonInclude]
         public DateTime CreationDate { get; private init; }
