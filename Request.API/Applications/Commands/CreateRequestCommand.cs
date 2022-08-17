@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace Request.API.Applications.Commands

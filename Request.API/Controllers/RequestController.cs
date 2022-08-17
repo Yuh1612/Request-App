@@ -47,7 +47,6 @@ namespace Request.API.Controllers
         {
             _logger.LogInformation("----- Sending command: {command})", nameof(command));
             bool commandResult = await _mediator.Send(command);
-
             return commandResult ? Ok() : BadRequest();
         }
 
@@ -62,7 +61,8 @@ namespace Request.API.Controllers
             }
             return commandResult ? Ok() : BadRequest();
          }
-        [HttpDelete("{id}")]
+        [HttpDelete("{Id}")]
+
         public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
         {
             bool commandResult = false;
