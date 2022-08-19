@@ -10,5 +10,9 @@ namespace Request.Domain.Entities.Users
             UserName = userName;
             Email = email;
         }
+        public void Update(string userName)
+        {
+            UserName = userName ?? UserName; 
+        }
     }
 }

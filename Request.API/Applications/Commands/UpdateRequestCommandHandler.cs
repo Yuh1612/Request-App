@@ -53,7 +53,6 @@ namespace Request.API.Applications.Commands
                 await _unitOfWork.RollbackTransaction();
                 _logger.LogError(e.Message);
                 throw new HttpResponseException(HttpStatusCode.BadRequest, "Something went wrong!");
-
             }
         }
     }

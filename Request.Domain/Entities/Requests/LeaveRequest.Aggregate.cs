@@ -55,9 +55,10 @@
             this.Stages.Add(stage);
         }
 
-        public void AddState(string name, string? description)
+        public void AddStage(string name, string? description)
         {
-            AddStage(new Stage(name, description, this.Id));
+            var stage = new Stage(name, description, this.Id);
+            this.Stages.Add(stage);
         }
 
         public void RemoveState(Stage stage)

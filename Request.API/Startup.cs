@@ -38,8 +38,8 @@ namespace Request.API
             });
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddAutoMapper
-            (typeof(AutoMapperProfile).Assembly);
+            services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
+            services.AddHttpContextAccessor();
 
             RegisterDbContext(services);
 
@@ -112,6 +112,7 @@ namespace Request.API
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
             services.AddTransient<IIntegrationEventHandler<UserCreatedIntergrationEvent>, UserCreatedIntergrationEventHandler>();
+            services.AddTransient<IIntegrationEventHandler<UserUpdatedIntergrationEvent>, UserUpdatedIntergrationEventHandler>();
         }
 
         private void RegisterDbContext(IServiceCollection services)
@@ -130,7 +131,7 @@ namespace Request.API
             services.AddMediatR(typeof(UpdateRequestCommand).GetTypeInfo().Assembly);
             services.AddMediatR(typeof(CreateRequestCommand).GetTypeInfo().Assembly);
             services.AddMediatR(typeof(DeleteRequestCommand).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(ApproveRequestCommand).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(ConductRequestCommand).GetTypeInfo().Assembly);
         }
 
         private void RegisterUnitOfWork(IServiceCollection services)
@@ -170,6 +171,7 @@ namespace Request.API
             var eventBus = app.Services.GetRequiredService<IEventBus>();
 
             eventBus.Subscribe<UserCreatedIntergrationEvent, IIntegrationEventHandler<UserCreatedIntergrationEvent>>();
+            eventBus.Subscribe<UserUpdatedIntergrationEvent, IIntegrationEventHandler<UserUpdatedIntergrationEvent>>();
         }
     }
 }
