@@ -24,7 +24,7 @@ namespace Request.API.Controllers
         [HttpGet]
         [Route("approver/{approverId}")]
         [ProducesResponseType(typeof(List<LeaveRequestResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetLeaveRequests([FromRoute] Guid approverId)
+        public async Task<IActionResult> GetLeaveRequestsByApproverId([FromRoute] Guid approverId)
         {
             return Ok(await _requestQueries.GetLeaveRequestByApproverId(approverId));
         }
@@ -40,7 +40,7 @@ namespace Request.API.Controllers
         [HttpGet]
         [Route("requestor/{requestorId}")]
         [ProducesResponseType(typeof(List<LeaveRequestResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetLeaveRequestByRequestorIds([FromRoute] Guid requestorId)
+        public async Task<IActionResult> GetLeaveRequestsByRequestorId([FromRoute] Guid requestorId)
         {
             return Ok(await _requestQueries.GetLeaveRequestByRequestorId(requestorId));
         }
@@ -77,8 +77,8 @@ namespace Request.API.Controllers
             return commandResult ? Ok() : BadRequest();
         }
 
-        [HttpPost("approve")]
-        public async Task<IActionResult> ApproveRequest([FromBody] ApproveRequestCommand command)
+        [HttpPost("conduct")]
+        public async Task<IActionResult> ConductRequest([FromBody] ConductRequestCommand command)
         {
             bool commandResult = false;
             if (command.Id != Guid.Empty)

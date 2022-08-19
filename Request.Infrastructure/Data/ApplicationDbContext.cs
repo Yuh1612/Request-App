@@ -44,6 +44,9 @@ namespace Request.Infrastructure.Data
                 .HasForeignKey(x => x.ApproverId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Stage>()
+                .Property(x => x.Id).ValueGeneratedNever();
+
             modelBuilder.Entity<User>().HasQueryFilter(p => !p.IsDelete);
             modelBuilder.Entity<LeaveRequest>().HasQueryFilter(p => !p.IsDelete);
             modelBuilder.Entity<Stage>().HasQueryFilter(p => !p.IsDelete);
