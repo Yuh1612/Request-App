@@ -22,11 +22,11 @@ namespace Request.API.Controllers
         }
 
         [HttpGet]
-        [Route("approver/{approverId}")]
+        [Route("approver/leaveRequests")]
         [ProducesResponseType(typeof(List<LeaveRequestResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetLeaveRequests([FromRoute] Guid approverId)
+        public async Task<IActionResult> GetLeaveRequests()
         {
-            return Ok(await _requestQueries.GetLeaveRequestByApproverId(approverId));
+            return Ok(await _requestQueries.GetLeaveRequestByApproverId());
         }
 
         [HttpGet]
@@ -34,15 +34,22 @@ namespace Request.API.Controllers
         [ProducesResponseType(typeof(LeaveRequestDetail), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetLeaveRequest([FromRoute] Guid id)
         {
-            return Ok(await _requestQueries.GetLeaveRequest(id));
+            try
+            {
+                return Ok(await _requestQueries.GetLeaveRequest(id));
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         [HttpGet]
-        [Route("requestor/{requestorId}")]
+        [Route("requestor/leaveRequests")]
         [ProducesResponseType(typeof(List<LeaveRequestResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetLeaveRequestByRequestorIds([FromRoute] Guid requestorId)
+        public async Task<IActionResult> GetLeaveRequestByRequestorIds()
         {
-            return Ok(await _requestQueries.GetLeaveRequestByRequestorId(requestorId));
+            return Ok(await _requestQueries.GetLeaveRequestByRequestorId());
         }
 
         [HttpPost]
