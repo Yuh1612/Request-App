@@ -4,6 +4,10 @@ namespace Request.Domain.Entities.Requests
 {
     public class Stage : Entity
     {
+        public Stage()
+        {
+
+        }
         public Stage(string name, string? description, Guid? leaveRequestId)
         {
             Id = Guid.NewGuid();

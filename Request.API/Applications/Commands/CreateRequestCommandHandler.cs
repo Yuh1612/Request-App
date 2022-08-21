@@ -51,7 +51,7 @@ namespace Request.API.Applications.Commands
                         request.Message);
                 var status = await _unitOfWork.statusRepository.GetStatusByName(StatusEnum.Waiting);
                 leaveRequest.UpdateStatus(status.Id);
-                leaveRequest.AddState(StageEnum.Process, "Chờ Minh Trí Lê");
+                leaveRequest.AddStage(StageEnum.Process, "Chờ Minh Trí Lê");
                 await _unitOfWork.leaveRequestRepository.InsertAsync(leaveRequest);
                 return await _unitOfWork.CommitTransaction();
             }

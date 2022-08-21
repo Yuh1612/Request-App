@@ -84,8 +84,8 @@ namespace Request.API.Controllers
             return commandResult ? Ok() : BadRequest();
         }
 
-        [HttpPost("approve")]
-        public async Task<IActionResult> ApproveRequest([FromBody] ApproveRequestCommand command)
+        [HttpPost("conduct")]
+        public async Task<IActionResult> ConductRequest([FromBody] ConductRequestCommand command)
         {
             bool commandResult = false;
             if (command.Id != Guid.Empty)

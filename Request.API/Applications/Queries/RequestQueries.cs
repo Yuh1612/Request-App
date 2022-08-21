@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using API.Exceptions;
+using AutoMapper;
 using Dapper;
 using Request.Domain.Entities.Requests;
 using Request.Domain.Entities.Users;
 using Request.Infrastructure.Data;
 using System.Linq;
+using System.Net;
 
 namespace Request.API.Applications.Queries
 {
@@ -40,10 +42,11 @@ namespace Request.API.Applications.Queries
                     ON (
                         r.Id		= st.LeaveRequestId
                     )
-                    WHERE r.RequestorId = @requestorId";
+                    WHERE r.RequestorId = @requestorId AND r.IsDelete = 0";
             var requestDictionary = new Dictionary<Guid, LeaveRequest>();
-            var results = await connection.QueryAsync<LeaveRequest, Status, User, Stage, LeaveRequest> (query,
-                (request, status, user, stage) => {
+            var results = await connection.QueryAsync<LeaveRequest, Status, User, Stage, LeaveRequest>(query,
+                (request, status, user, stage) =>
+                {
                     LeaveRequest requestEntry;
 
                     if (!requestDictionary.TryGetValue(request.Id, out requestEntry))
@@ -57,7 +60,7 @@ namespace Request.API.Applications.Queries
                     requestEntry.Status = status;
                     requestEntry.Approver = user;
                     return requestEntry;
-                },new {requestorId = GetCurrentUserId()});
+                }, new { requestorId = GetCurrentUserId()});
             return MapperLeaveRequests(results.Distinct().ToList());
         }
         public async Task<List<LeaveRequestResponse>> GetLeaveRequestByApproverId()
@@ -78,10 +81,11 @@ namespace Request.API.Applications.Queries
                     ON (
                         r.Id		= st.LeaveRequestId
                     )
-                    WHERE r.ApproverId = @approverId";
+                    WHERE r.ApproverId = @approverId AND r.IsDelete = 0";
             var requestDictionary = new Dictionary<Guid, LeaveRequest>();
             var results = await connection.QueryAsync<LeaveRequest, Status, User, Stage, LeaveRequest>(query,
-                (request, status, user, stage) => {
+                (request, status, user, stage) =>
+                {
                     LeaveRequest requestEntry;
 
                     if (!requestDictionary.TryGetValue(request.Id, out requestEntry))
@@ -98,6 +102,7 @@ namespace Request.API.Applications.Queries
                 }, new { approverId = GetCurrentUserId()});
             return MapperLeaveRequests(results.Where(c => c.Stages.Count(c => c.Name == StageEnum.Finish ) == 0).Distinct().ToList());
         }
+
         public List<LeaveRequestResponse> MapperLeaveRequests(List<LeaveRequest> results)
         {
             List<LeaveRequestResponse> leaveRequests = new List<LeaveRequestResponse>();
@@ -140,7 +145,8 @@ namespace Request.API.Applications.Queries
                     ON (
                         r.Id		= st.LeaveRequestId
                     )
-                    WHERE r.Id = @id
+                    WHERE r.Id = @id 
+                    AND r.IsDelete = 0
                     AND r.RequestorId = @requestorId";
             var requestDictionary = new Dictionary<Guid, LeaveRequest>();
             var results = await connection.QueryAsync<LeaveRequest, Status, User, User, Stage, LeaveRequest>(query,
