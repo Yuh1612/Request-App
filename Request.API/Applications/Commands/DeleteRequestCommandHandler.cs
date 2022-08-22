@@ -37,7 +37,7 @@ namespace Request.API.Applications.Commands
             {
                 await _unitOfWork.BeginTransaction();
 
-                if (Guid.TryParse(_httpContextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value,
+                if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value,
                     out var requestorId))
                 {
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
