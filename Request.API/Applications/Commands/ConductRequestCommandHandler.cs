@@ -10,11 +10,14 @@ namespace Request.API.Applications.Commands
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<ConductRequestCommandHandler> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ConductRequestCommandHandler(IUnitOfWork unitOfWork, ILogger<ConductRequestCommandHandler> logger)
+        public ConductRequestCommandHandler(IUnitOfWork unitOfWork, ILogger<ConductRequestCommandHandler> logger,
+            IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> Handle(ConductRequestCommand request, CancellationToken cancellationToken)
@@ -24,10 +27,19 @@ namespace Request.API.Applications.Commands
                 _logger.LogInformation("Handle command: {command}", nameof(ConductRequestCommandHandler));
 
                 await _unitOfWork.BeginTransaction();
-                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id);
+
+                if (Guid.TryParse(_httpContextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value,
+                    out var requestorId))
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id, requestorId);
                 if (leaveRequest == null) throw new HttpResponseException(HttpStatusCode.NotFound, "Request not found");
+
                 var status = await _unitOfWork.statusRepository.FindAsync(request.StatusId);
                 if (status == null) throw new HttpResponseException(HttpStatusCode.NotFound, "Status not found");
+
                 leaveRequest.UpdateStatus(status.Id);
                 leaveRequest.AddStage(StageEnum.Finish, "Trí minh lê kết thúc");
                 _unitOfWork.leaveRequestRepository.Update(leaveRequest);

@@ -121,7 +121,7 @@ namespace Request.API.Applications.Queries
             return leaveRequests;
         }
 
-        public async Task<LeaveRequestDetail> GetLeaveRequest(Guid id)
+        public async Task<LeaveRequestDetail> GetLeaveRequest(Guid id, Guid userId)
         {
             using var connection = _dbContext.GetConnection();
 
@@ -143,7 +143,7 @@ namespace Request.API.Applications.Queries
                     ON (
                         r.Id		= st.LeaveRequestId
                     )
-                    WHERE r.Id = @id AND r.IsDelete = 0";
+                    WHERE (r.RequestorId = @userId OR r.ApproverId = @userId) AND r.Id = @id AND r.IsDelete = 0  ";
             var requestDictionary = new Dictionary<Guid, LeaveRequest>();
             try
             {

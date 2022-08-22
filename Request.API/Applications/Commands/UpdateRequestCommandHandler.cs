@@ -9,13 +9,16 @@ namespace Request.API.Applications.Commands
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UpdateRequestCommandHandler> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UpdateRequestCommandHandler(
             IUnitOfWork unitOfWork,
-            ILogger<UpdateRequestCommandHandler> logger)
+            ILogger<UpdateRequestCommandHandler> logger,
+            IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> Handle(UpdateRequestCommand request, CancellationToken cancellationToken)
@@ -39,8 +42,16 @@ namespace Request.API.Applications.Commands
             try
             {
                 await _unitOfWork.BeginTransaction();
-                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id);
+
+                if (Guid.TryParse(_httpContextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value,
+                    out var requestorId))
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id, requestorId);
                 if (leaveRequest == null) throw new HttpResponseException(HttpStatusCode.NotFound);
+
                 leaveRequest.Update(request.DayOffStart,
                     request.DayOffEnd,
                     request.CompensationDayStart,

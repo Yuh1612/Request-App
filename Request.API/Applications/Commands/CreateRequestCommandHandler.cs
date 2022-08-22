@@ -10,13 +10,16 @@ namespace Request.API.Applications.Commands
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UpdateRequestCommandHandler> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CreateRequestCommandHandler(
             IUnitOfWork unitOfWork,
-            ILogger<UpdateRequestCommandHandler> logger)
+            ILogger<UpdateRequestCommandHandler> logger,
+            IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> Handle(CreateRequestCommand request, CancellationToken cancellationToken)
@@ -25,11 +28,6 @@ namespace Request.API.Applications.Commands
             {
                 _logger.LogWarning("Requestor is null!");
                 throw new HttpResponseException(HttpStatusCode.NotFound, "Request is null!");
-            }
-            if (request.RequestorId == Guid.Empty)
-            {
-                _logger.LogWarning("Requestor is null!");
-                throw new HttpResponseException(HttpStatusCode.NotFound, "Requestor is null!");
             }
 
             if (request.ApproverId == Guid.Empty)
@@ -42,14 +40,22 @@ namespace Request.API.Applications.Commands
             {
                 await _unitOfWork.BeginTransaction();
 
-                var leaveRequest = new LeaveRequest(request.RequestorId,
+                if (Guid.TryParse(_httpContextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value,
+                    out var requestorId))
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                var leaveRequest = new LeaveRequest(requestorId,
                         request.ApproverId,
                         request.DayOffStart,
                         request.DayOffEnd,
                         request.CompensationDayStart,
                         request.CompensationDayEnd,
                         request.Message);
+
                 var status = await _unitOfWork.statusRepository.GetStatusByName(StatusEnum.Waiting);
+
                 leaveRequest.UpdateStatus(status.Id);
                 leaveRequest.AddStage(StageEnum.Process, "Chờ Minh Trí Lê");
                 await _unitOfWork.leaveRequestRepository.InsertAsync(leaveRequest);
