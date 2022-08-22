@@ -8,9 +8,6 @@ namespace Request.API.Applications.Commands
     public class CreateRequestCommand : IRequest<bool>
     {
         [DataMember]
-        public Guid RequestorId { get; set; }
-
-        [DataMember]
         public Guid ApproverId { get; set; }
 
         [DataMember]
@@ -33,7 +30,6 @@ namespace Request.API.Applications.Commands
         }
 
         public CreateRequestCommand(
-            Guid requesttorId,
             Guid approverId,
             DateTime dayOffStart,
             DateTime dayOffEnd,
@@ -41,7 +37,6 @@ namespace Request.API.Applications.Commands
             DateTime compensationDayEnd,
             string message)
         {
-            RequestorId = requesttorId;
             ApproverId = approverId;
             DayOffStart = dayOffStart;
             DayOffEnd = dayOffEnd;

@@ -9,12 +9,15 @@ namespace Request.API.Applications.Commands
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<DeleteRequestCommandHandler> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public DeleteRequestCommandHandler(IUnitOfWork unitOfWork,
-            ILogger<DeleteRequestCommandHandler> logger)
+            ILogger<DeleteRequestCommandHandler> logger,
+            IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> Handle(DeleteRequestCommand request, CancellationToken cancellationToken)
@@ -33,8 +36,16 @@ namespace Request.API.Applications.Commands
             try
             {
                 await _unitOfWork.BeginTransaction();
-                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id);
-                if (leaveRequest == null) throw new ArgumentNullException("Request is not existed!");
+
+                if (Guid.TryParse(_httpContextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value,
+                    out var requestorId))
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id, requestorId);
+                if (leaveRequest == null) throw new HttpResponseException(HttpStatusCode.BadRequest);
+
                 leaveRequest.Delete();
                 _unitOfWork.leaveRequestRepository.Update(leaveRequest);
                 return await _unitOfWork.CommitTransaction();
@@ -43,7 +54,7 @@ namespace Request.API.Applications.Commands
             {
                 await _unitOfWork.RollbackTransaction();
                 _logger.LogError(e.Message);
-                throw new HttpResponseException(HttpStatusCode.BadRequest,  "Something went wrong!");
+                throw new HttpResponseException(HttpStatusCode.BadRequest, "Something went wrong!");
             }
         }
     }
