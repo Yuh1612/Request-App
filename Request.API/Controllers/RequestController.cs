@@ -55,6 +55,8 @@ namespace Request.API.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreateRequest([FromBody] CreateRequestCommand command)
         {
             _logger.LogInformation("----- Sending command: {command})", nameof(command));
@@ -63,6 +65,8 @@ namespace Request.API.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> UpdateRequest([FromBody] UpdateRequestCommand command)
         {
             bool commandResult = false;
@@ -75,6 +79,8 @@ namespace Request.API.Controllers
         }
 
         [HttpDelete("{Id}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
         {
             bool commandResult = false;
@@ -87,6 +93,8 @@ namespace Request.API.Controllers
         }
 
         [HttpPost("conduct")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ConductRequest([FromBody] ConductRequestCommand command)
         {
             bool commandResult = false;
