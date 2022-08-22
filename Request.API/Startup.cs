@@ -159,9 +159,11 @@ namespace Request.API
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseMiddleware<RequestLoggerMiddleware>();
+
+            app.UseAuthorization();
 
             app.MapControllers();
         }

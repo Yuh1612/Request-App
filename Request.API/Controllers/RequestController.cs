@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Request.API.Applications.Queries;
 using System.Net;
 using Request.API.Applications.Commands;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Request.API.Controllers
 {
     [ApiController]
     [Route("api/requests")]
+    [Authorize]
     public class RequestController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -22,7 +24,6 @@ namespace Request.API.Controllers
         }
 
         [HttpGet]
-        [Route("approver/leaveRequests")]
         [ProducesResponseType(typeof(List<LeaveRequestResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetLeaveRequests()
         {
@@ -32,6 +33,7 @@ namespace Request.API.Controllers
         [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(typeof(LeaveRequestDetail), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetLeaveRequest([FromRoute] Guid id)
         {
             try
@@ -45,9 +47,9 @@ namespace Request.API.Controllers
         }
 
         [HttpGet]
-        [Route("requestor/leaveRequests")]
+        [Route("approve")]
         [ProducesResponseType(typeof(List<LeaveRequestResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetLeaveRequestByRequestorIds()
+        public async Task<IActionResult> GetApprovedLeaveRequests()
         {
             return Ok(await _requestQueries.GetLeaveRequestByRequestorId());
         }

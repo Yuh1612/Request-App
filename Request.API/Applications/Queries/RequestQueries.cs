@@ -60,9 +60,10 @@ namespace Request.API.Applications.Queries
                     requestEntry.Status = status;
                     requestEntry.Approver = user;
                     return requestEntry;
-                }, new { requestorId = GetCurrentUserId()});
+                }, new { requestorId = GetCurrentUserId() });
             return MapperLeaveRequests(results.Distinct().ToList());
         }
+
         public async Task<List<LeaveRequestResponse>> GetLeaveRequestByApproverId()
         {
             using var connection = _dbContext.GetConnection();
@@ -99,8 +100,8 @@ namespace Request.API.Applications.Queries
                     requestEntry.Status = status;
                     requestEntry.Approver = user;
                     return requestEntry;
-                }, new { approverId = GetCurrentUserId()});
-            return MapperLeaveRequests(results.Where(c => c.Stages.Count(c => c.Name == StageEnum.Finish ) == 0).Distinct().ToList());
+                }, new { approverId = GetCurrentUserId() });
+            return MapperLeaveRequests(results.Where(c => c.Stages.Count(c => c.Name == StageEnum.Finish) == 0).Distinct().ToList());
         }
 
         public List<LeaveRequestResponse> MapperLeaveRequests(List<LeaveRequest> results)
@@ -145,9 +146,9 @@ namespace Request.API.Applications.Queries
                     ON (
                         r.Id		= st.LeaveRequestId
                     )
-                    WHERE r.Id = @id 
+                    WHERE r.Id = @id
                     AND r.IsDelete = 0
-                    AND r.RequestorId = @requestorId";
+                    AND (r.RequestorId = @userId OR r.ApproverId = @userId)";
             var requestDictionary = new Dictionary<Guid, LeaveRequest>();
             var results = await connection.QueryAsync<LeaveRequest, Status, User, User, Stage, LeaveRequest>(query,
                 (request, status, approver, requestor, stage) =>
@@ -166,14 +167,16 @@ namespace Request.API.Applications.Queries
                     requestEntry.Approver = approver;
                     requestEntry.Requestor = requestor;
                     return requestEntry;
-                }, new { 
+                }, new
+                {
                     id = id,
-                    requestorId = GetCurrentUserId()
-                }) ;
+                    userId = GetCurrentUserId()
+                });
             if (results.AsList().Count == 0)
                 throw new KeyNotFoundException();
             return MapperLeaveRequest(results.Distinct().ToList().First());
         }
+
         public LeaveRequestDetail MapperLeaveRequest(LeaveRequest result)
         {
             LeaveRequestDetail leaveRequestDetail = new LeaveRequestDetail();
@@ -191,9 +194,11 @@ namespace Request.API.Applications.Queries
             leaveRequestDetail.RequestorName = result.Requestor.UserName;
             return leaveRequestDetail;
         }
+
         public Guid GetCurrentUserId()
         {
-            return Guid.Parse(_contextAccessor.HttpContext?.User.Claims.First(i => i.Type == "id").Value);
+            var result = Guid.TryParse(_contextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value, out var userId);
+            return result ? userId : throw new HttpResponseException(HttpStatusCode.Unauthorized, "Something went wrong");
         }
     }
 }
