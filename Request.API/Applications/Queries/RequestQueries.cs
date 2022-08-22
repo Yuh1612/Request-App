@@ -12,16 +12,19 @@ namespace Request.API.Applications.Queries
     public class RequestQueries : IRequestQueries
     {
         private readonly ApplicationDbContext _dbContext;
+        protected readonly IHttpContextAccessor _contextAccessor;
         private readonly IMapper _mapper;
 
         public RequestQueries(ApplicationDbContext dbContext,
-            IMapper mapper)
+            IMapper mapper,
+            IHttpContextAccessor contextAccessor)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _contextAccessor = contextAccessor;
         }
 
-        public async Task<List<LeaveRequestResponse>> GetLeaveRequestByRequestorId(Guid requestorId)
+        public async Task<List<LeaveRequestResponse>> GetLeaveRequestByRequestorId()
         {
             using var connection = _dbContext.GetConnection();
 
@@ -57,11 +60,10 @@ namespace Request.API.Applications.Queries
                     requestEntry.Status = status;
                     requestEntry.Approver = user;
                     return requestEntry;
-                }, new { requestorId });
+                }, new { requestorId = GetCurrentUserId()});
             return MapperLeaveRequests(results.Distinct().ToList());
         }
-
-        public async Task<List<LeaveRequestResponse>> GetLeaveRequestByApproverId(Guid approverId)
+        public async Task<List<LeaveRequestResponse>> GetLeaveRequestByApproverId()
         {
             using var connection = _dbContext.GetConnection();
 
@@ -97,8 +99,8 @@ namespace Request.API.Applications.Queries
                     requestEntry.Status = status;
                     requestEntry.Approver = user;
                     return requestEntry;
-                }, new { approverId });
-            return MapperLeaveRequests(results.Where(c => c.Stages.Count(c => c.Name == "Kết thúc") == 0).Distinct().ToList());
+                }, new { approverId = GetCurrentUserId()});
+            return MapperLeaveRequests(results.Where(c => c.Stages.Count(c => c.Name == StageEnum.Finish ) == 0).Distinct().ToList());
         }
 
         public List<LeaveRequestResponse> MapperLeaveRequests(List<LeaveRequest> results)
@@ -143,11 +145,11 @@ namespace Request.API.Applications.Queries
                     ON (
                         r.Id		= st.LeaveRequestId
                     )
-                    WHERE r.Id = @id AND r.IsDelete = 0";
+                    WHERE r.Id = @id 
+                    AND r.IsDelete = 0
+                    AND r.RequestorId = @requestorId";
             var requestDictionary = new Dictionary<Guid, LeaveRequest>();
-            try
-            {
-                var results = await connection.QueryAsync<LeaveRequest, Status, User, User, Stage, LeaveRequest>(query,
+            var results = await connection.QueryAsync<LeaveRequest, Status, User, User, Stage, LeaveRequest>(query,
                 (request, status, approver, requestor, stage) =>
                 {
                     LeaveRequest requestEntry;
@@ -164,15 +166,14 @@ namespace Request.API.Applications.Queries
                     requestEntry.Approver = approver;
                     requestEntry.Requestor = requestor;
                     return requestEntry;
-                }, new { id });
-                return MapperLeaveRequest(results.Distinct().ToList().First());
-            }
-            catch
-            {
-                throw new HttpResponseException(HttpStatusCode.BadRequest, "Something went wrong");
-            }
+                }, new { 
+                    id = id,
+                    requestorId = GetCurrentUserId()
+                }) ;
+            if (results.AsList().Count == 0)
+                throw new KeyNotFoundException();
+            return MapperLeaveRequest(results.Distinct().ToList().First());
         }
-
         public LeaveRequestDetail MapperLeaveRequest(LeaveRequest result)
         {
             LeaveRequestDetail leaveRequestDetail = new LeaveRequestDetail();
@@ -189,6 +190,10 @@ namespace Request.API.Applications.Queries
             leaveRequestDetail.RequestorId = result.RequestorId;
             leaveRequestDetail.RequestorName = result.Requestor.UserName;
             return leaveRequestDetail;
+        }
+        public Guid GetCurrentUserId()
+        {
+            return Guid.Parse(_contextAccessor.HttpContext?.User.Claims.First(i => i.Type == "id").Value);
         }
     }
 }
