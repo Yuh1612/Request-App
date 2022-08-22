@@ -11,7 +11,7 @@
             DateTime? compensationDayEnd,
             string? message)
         {
-            this.Id = Guid.NewGuid();
+            this.Id = requestorId;
             this.RequestorId = requestorId;
             this.ApproverId = approverId;
             this.DayOffStart = dayOffStart;
