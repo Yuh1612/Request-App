@@ -131,7 +131,8 @@ namespace Request.API
             services.AddMediatR(typeof(UpdateRequestCommand).GetTypeInfo().Assembly);
             services.AddMediatR(typeof(CreateRequestCommand).GetTypeInfo().Assembly);
             services.AddMediatR(typeof(DeleteRequestCommand).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(ConductRequestCommand).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(ApproveRequestCommand).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(CancelRequestCommand).GetTypeInfo().Assembly);
         }
 
         private void RegisterUnitOfWork(IServiceCollection services)

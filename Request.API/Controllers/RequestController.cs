@@ -92,10 +92,24 @@ namespace Request.API.Controllers
             return commandResult ? Ok() : BadRequest();
         }
 
-        [HttpPost("conduct")]
+        [HttpPost("approve")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> ConductRequest([FromBody] ConductRequestCommand command)
+        public async Task<IActionResult> AppproveRequest([FromBody] ApproveRequestCommand command)
+        {
+            bool commandResult = false;
+            if (command.Id != Guid.Empty)
+            {
+                _logger.LogInformation("----- Sending command: {command})", nameof(command));
+                commandResult = await _mediator.Send(command);
+            }
+            return commandResult ? Ok() : BadRequest();
+        }
+
+        [HttpPost("cancel")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> CancelRequest([FromBody] CancelRequestCommand command)
         {
             bool commandResult = false;
             if (command.Id != Guid.Empty)

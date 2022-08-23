@@ -7,7 +7,6 @@ namespace Request.Domain.Interfaces
         IUserRepository userRepository { get; }
         ILeaveRequestRepository leaveRequestRepository { get; }
         IStageRepository stageRepository { get; }
-
         IStatusRepository statusRepository { get; }
 
         Task<bool> SaveChangeAsync();
