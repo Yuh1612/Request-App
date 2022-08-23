@@ -7,5 +7,7 @@
         Task<List<LeaveRequestResponse>> GetLeaveRequestByApproverId();
 
         Task<LeaveRequestDetail> GetLeaveRequest(Guid id);
+
+        Task<List<LeaveRequestDTO>> GetLeaveRequestTest();
     }
 }

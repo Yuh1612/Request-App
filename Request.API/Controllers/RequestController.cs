@@ -27,7 +27,7 @@ namespace Request.API.Controllers
         [ProducesResponseType(typeof(List<LeaveRequestResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetLeaveRequests()
         {
-            return Ok(await _requestQueries.GetLeaveRequestByRequestorId());
+            return Ok(await _requestQueries.GetLeaveRequestTest());
         }
 
         [HttpGet]

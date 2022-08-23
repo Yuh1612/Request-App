@@ -4,7 +4,6 @@ using Dapper;
 using Request.Domain.Entities.Requests;
 using Request.Domain.Entities.Users;
 using Request.Infrastructure.Data;
-using System.Linq;
 using System.Net;
 
 namespace Request.API.Applications.Queries
@@ -101,7 +100,7 @@ namespace Request.API.Applications.Queries
                     requestEntry.Approver = user;
                     return requestEntry;
                 }, new { approverId = GetCurrentUserId() });
-            return MapperLeaveRequests(results.Where(c => c.Stages.Count(c => c.Name == StageEnum.Finish) == 0).Distinct().ToList());
+            return MapperLeaveRequests(results.Distinct().ToList());
         }
 
         public List<LeaveRequestResponse> MapperLeaveRequests(List<LeaveRequest> results)
@@ -199,6 +198,28 @@ namespace Request.API.Applications.Queries
         {
             var result = Guid.TryParse(_contextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value, out var userId);
             return result ? userId : throw new HttpResponseException(HttpStatusCode.Unauthorized, "Something went wrong");
+        }
+
+        public async Task<List<LeaveRequestDTO>> GetLeaveRequestTest()
+        {
+            using var connection = _dbContext.GetConnection();
+
+            string query = $@"Select lr.Id,
+                                     lr.Name,
+                                     s.Name as StageName,
+                                     st.Name as StatusName,
+                                     u.UserName as ApproverName,
+                                     lr.CreatedAt, lr.UpdatedAt
+                                from dbo.LeaveRequests as lr
+                                join dbo.Statuses as st on lr.StatusId = st.Id
+                                join dbo.Users as u on lr.ApproverId = u.Id
+                                join dbo.Stages as s on lr.Id = s.LeaveRequestId
+                                join (select LeaveRequestId, Max(CreateAt) as CreateAt
+                                        from dbo.Stages group by LeaveRequestId) as i
+                                    on s.LeaveRequestId = i.LeaveRequestId and s.CreateAt = i.CreateAt
+                                where lr.Id = @id";
+            var result = await connection.QueryAsync<LeaveRequestDTO>(query, new { id = GetCurrentUserId() });
+            return result.ToList();
         }
     }
 }
