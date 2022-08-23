@@ -29,12 +29,12 @@ namespace Request.API.Applications.Commands
                 await _unitOfWork.BeginTransaction();
 
                 if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value,
-                    out var requestorId))
+                    out var approverId))
                 {
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id, requestorId);
+                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindApprovedAsync(request.Id, approverId);
                 if (leaveRequest == null) throw new HttpResponseException(HttpStatusCode.NotFound, "Request not found");
 
                 var status = await _unitOfWork.statusRepository.FindAsync(request.StatusId);
