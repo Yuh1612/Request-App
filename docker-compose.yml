@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: API\Dockerfile
+    ports:
+      - 5000:80
+    networks:
+      - dbnet
+networks:
+  dbnet:
+    driver: bridge
