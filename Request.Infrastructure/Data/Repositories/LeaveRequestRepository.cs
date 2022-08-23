@@ -10,6 +10,11 @@ namespace Request.Infrastructure.Data.Repositories
         {
         }
 
+        public async Task<LeaveRequest?> FindApprovedAsync(Guid Id, Guid userId)
+        {
+            return await dbSet.Where(r => r.Id == Id && r.ApproverId == userId).FirstOrDefaultAsync();
+        }
+
         public async Task<LeaveRequest?> FindAsync(Guid Id, Guid userId)
         {
             return await dbSet.Where(r => r.Id == Id && r.RequestorId == userId).FirstOrDefaultAsync();
