@@ -100,7 +100,7 @@ namespace Request.API
         {
             services.AddSingleton<IEventBus, EventBusRabbitMQServices>(sp =>
             {
-                var subscriptionClientName = "queue_test";
+                var subscriptionClientName = "queue_test_request";
                 var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQServices>>();
                 var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
                 var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
