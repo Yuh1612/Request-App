@@ -11,14 +11,13 @@
             DateTime? compensationDayEnd,
             string? message)
         {
-            this.Id = requestorId;
+            this.Id = new Guid();
             this.RequestorId = requestorId;
             this.ApproverId = approverId;
             this.DayOffStart = dayOffStart;
             this.DayOffEnd = dayOffEnd;
             this.CompensationDayStart = compensationDayStart;
             this.CompensationDayEnd = compensationDayEnd;
-            this.ApproverId = approverId;
             this.Message = message;
 
             if (CompensationDayStart == null || CompensationDayEnd == null)
