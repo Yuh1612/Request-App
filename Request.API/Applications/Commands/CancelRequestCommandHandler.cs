@@ -6,18 +6,14 @@ using System.Net;
 
 namespace Request.API.Applications.Commands
 {
-    public class CancelRequestCommandHandler : IRequestHandler<CancelRequestCommand, bool>
+    public class CancelRequestCommandHandler : BaseCommandHandler, IRequestHandler<CancelRequestCommand, bool>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<CancelRequestCommandHandler> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CancelRequestCommandHandler(IUnitOfWork unitOfWork, ILogger<CancelRequestCommandHandler> logger,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, logger)
         {
             _unitOfWork = unitOfWork;
-            _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> Handle(CancelRequestCommand request, CancellationToken cancellationToken)
@@ -28,24 +24,20 @@ namespace Request.API.Applications.Commands
 
                 await _unitOfWork.BeginTransaction();
 
-                if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value,
-                    out var userId))
-                {
-                    throw new HttpResponseException(HttpStatusCode.BadRequest);
-                }
-
-                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id, userId);
+                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id, GetCurrentUserId());
                 if (leaveRequest == null)
                 {
-                    _logger.LogError("leaveRequest is null");
-                    throw new HttpResponseException(HttpStatusCode.NotFound, "Request not found");
+                    _logger.LogError("Request not found");
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
+
 
                 var status = await _unitOfWork.statusRepository.GetStatusByName(StatusEnum.Cancel);
                 if (status == null)
                 {
-                    _logger.LogError("status is null");
-                    throw new HttpResponseException(HttpStatusCode.NotFound, "Status not found");
+                    _logger.LogError("Status not found");
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
+
                 }
 
                 leaveRequest.StatusId = status.Id;
