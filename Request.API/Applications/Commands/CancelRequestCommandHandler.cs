@@ -35,12 +35,20 @@ namespace Request.API.Applications.Commands
                 }
 
                 var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id, userId);
-                if (leaveRequest == null) throw new HttpResponseException(HttpStatusCode.NotFound, "Request not found");
+                if (leaveRequest == null)
+                {
+                    _logger.LogError("leaveRequest is null");
+                    throw new HttpResponseException(HttpStatusCode.NotFound, "Request not found");
+                }
 
                 var status = await _unitOfWork.statusRepository.GetStatusByName(StatusEnum.Cancel);
-                if (status == null) throw new HttpResponseException(HttpStatusCode.NotFound, "Status not found");
+                if (status == null)
+                {
+                    _logger.LogError("status is null");
+                    throw new HttpResponseException(HttpStatusCode.NotFound, "Status not found");
+                }
 
-                leaveRequest.UpdateStatus(status.Id);
+                leaveRequest.StatusId = status.Id;
                 leaveRequest.AddStage(StageEnum.Finish, request.Description);
                 _unitOfWork.leaveRequestRepository.Update(leaveRequest);
 

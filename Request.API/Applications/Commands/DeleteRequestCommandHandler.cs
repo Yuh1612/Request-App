@@ -22,17 +22,6 @@ namespace Request.API.Applications.Commands
 
         public async Task<bool> Handle(DeleteRequestCommand request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                _logger.LogWarning("Request is null!");
-                throw new HttpResponseException(HttpStatusCode.NotFound, "Request is null!");
-            }
-            if (request.Id == Guid.Empty)
-            {
-                _logger.LogWarning("Id is null!");
-                throw new HttpResponseException(HttpStatusCode.NotFound, "Id is null!");
-            }
-
             try
             {
                 await _unitOfWork.BeginTransaction();
@@ -44,7 +33,11 @@ namespace Request.API.Applications.Commands
                 }
 
                 var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id, requestorId);
-                if (leaveRequest == null) throw new HttpResponseException(HttpStatusCode.BadRequest);
+                if (leaveRequest == null)
+                {
+                    _logger.LogError("leaveRequest is null!");
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
 
                 leaveRequest.Delete();
                 _unitOfWork.leaveRequestRepository.Update(leaveRequest);

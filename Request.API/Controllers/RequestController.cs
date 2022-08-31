@@ -57,67 +57,71 @@ namespace Request.API.Controllers
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> CreateRequest([FromBody] CreateRequestCommand command)
+        public async Task<IActionResult> CreateRequest([FromBody] CreateRequestCommand request)
         {
-            _logger.LogInformation("----- Sending command: {command})", nameof(command));
-            bool commandResult = await _mediator.Send(command);
-            return commandResult ? Ok() : BadRequest();
+            bool requestResult = false;
+            if (request != null && request?.ApproverId != Guid.Empty)
+            {
+                _logger.LogInformation("----- Sending reuqest: {reuqest})", nameof(request));
+                requestResult = await _mediator.Send(request);
+            }
+            return requestResult ? Ok() : BadRequest();
         }
 
         [HttpPut]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateRequest([FromBody] UpdateRequestCommand command)
+        public async Task<IActionResult> UpdateRequest([FromBody] UpdateRequestCommand request)
         {
-            bool commandResult = false;
-            if (command.Id != Guid.Empty)
+            bool requestResult = false;
+            if (request != null && request.Id != Guid.Empty && request.DayOffStart != null && request.DayOffEnd != null)
             {
-                _logger.LogInformation("----- Sending command: {command})", nameof(command));
-                commandResult = await _mediator.Send(command);
+                _logger.LogInformation("----- Sending request: {request})", nameof(request));
+                requestResult = await _mediator.Send(request);
             }
-            return commandResult ? Ok() : BadRequest();
+            return requestResult ? Ok() : BadRequest();
         }
 
         [HttpDelete("{Id}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand command)
+        public async Task<IActionResult> DeleteRequest([FromRoute] DeleteRequestCommand request)
         {
-            bool commandResult = false;
-            if (command.Id != Guid.Empty)
+            bool requestResult = false;
+            if (request != null && request.Id != Guid.Empty)
             {
-                _logger.LogInformation("----- Sending command: {command})", nameof(command));
-                commandResult = await _mediator.Send(command);
+                _logger.LogInformation("----- Sending request: {request})", nameof(request));
+                requestResult = await _mediator.Send(request);
             }
-            return commandResult ? Ok() : BadRequest();
+            return requestResult ? Ok() : BadRequest();
         }
 
         [HttpPost("approve")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AppproveRequest([FromBody] ApproveRequestCommand command)
+        public async Task<IActionResult> AppproveRequest([FromBody] ApproveRequestCommand request)
         {
-            bool commandResult = false;
-            if (command.Id != Guid.Empty)
+            bool requestResult = false;
+            if (request.Id != Guid.Empty)
             {
-                _logger.LogInformation("----- Sending command: {command})", nameof(command));
-                commandResult = await _mediator.Send(command);
+                _logger.LogInformation("----- Sending command: {command})", nameof(request));
+                requestResult = await _mediator.Send(request);
             }
-            return commandResult ? Ok() : BadRequest();
+            return requestResult ? Ok() : BadRequest();
         }
 
         [HttpPost("cancel")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> CancelRequest([FromBody] CancelRequestCommand command)
+        public async Task<IActionResult> CancelRequest([FromBody] CancelRequestCommand request)
         {
-            bool commandResult = false;
-            if (command.Id != Guid.Empty)
+            bool requestResult = false;
+            if (request.Id != Guid.Empty)
             {
-                _logger.LogInformation("----- Sending command: {command})", nameof(command));
-                commandResult = await _mediator.Send(command);
+                _logger.LogInformation("----- Sending command: {command})", nameof(request));
+                requestResult = await _mediator.Send(request);
             }
-            return commandResult ? Ok() : BadRequest();
+            return requestResult ? Ok() : BadRequest();
         }
     }
 }
