@@ -6,20 +6,14 @@ using System.Net;
 
 namespace Request.API.Applications.Commands
 {
-    public class CreateRequestCommandHandler : IRequestHandler<CreateRequestCommand, bool>
+    public class CreateRequestCommandHandler : BaseCommandHandler, IRequestHandler<CreateRequestCommand, bool>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<UpdateRequestCommandHandler> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CreateRequestCommandHandler(
-            IUnitOfWork unitOfWork,
-            ILogger<UpdateRequestCommandHandler> logger,
-            IHttpContextAccessor httpContextAccessor)
+        public CreateRequestCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateRequestCommandHandler> logger,
+            IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, logger)
         {
             _unitOfWork = unitOfWork;
-            _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> Handle(CreateRequestCommand request, CancellationToken cancellationToken)
@@ -28,22 +22,16 @@ namespace Request.API.Applications.Commands
             {
                 await _unitOfWork.BeginTransaction();
 
-                if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value,
-                    out var requestorId))
-                {
-                    throw new HttpResponseException(HttpStatusCode.BadRequest);
-                }
-
-                var leaveRequest = new LeaveRequest(requestorId,
+                var leaveRequest = new LeaveRequest(GetCurrentUserId(),
                         request.ApproverId,
                         request.DayOffStart,
                         request.DayOffEnd,
                         request.CompensationDayStart,
                         request.CompensationDayEnd,
                         request.Message);
-                var status = await _unitOfWork.statusRepository.GetStatusByName(StatusEnum.Waiting);
-                leaveRequest.StatusId = status.Id;
-                leaveRequest.AddStage(StageEnum.Process, "Chờ Minh Trí Lê");
+
+                leaveRequest.StatusId = StatusEnum.Waiting;
+                leaveRequest.AddStage(StageEnum.Process, null);
                 await _unitOfWork.leaveRequestRepository.InsertAsync(leaveRequest);
                 return await _unitOfWork.CommitTransaction();
             }

@@ -31,16 +31,7 @@ namespace Request.API.Applications.Commands
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-
-                var status = await _unitOfWork.statusRepository.GetStatusByName(StatusEnum.Cancel);
-                if (status == null)
-                {
-                    _logger.LogError("Status not found");
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
-
-                }
-
-                leaveRequest.StatusId = status.Id;
+                leaveRequest.StatusId = StatusEnum.Cancel;
                 leaveRequest.AddStage(StageEnum.Finish, request.Description);
                 _unitOfWork.leaveRequestRepository.Update(leaveRequest);
 

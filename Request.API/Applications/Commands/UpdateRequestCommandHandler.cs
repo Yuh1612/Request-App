@@ -5,49 +5,39 @@ using System.Net;
 
 namespace Request.API.Applications.Commands
 {
-    public class UpdateRequestCommandHandler : IRequestHandler<UpdateRequestCommand, bool>
+    public class UpdateRequestCommandHandler : BaseCommandHandler, IRequestHandler<UpdateRequestCommand, bool>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<UpdateRequestCommandHandler> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UpdateRequestCommandHandler(
-            IUnitOfWork unitOfWork,
-            ILogger<UpdateRequestCommandHandler> logger,
-            IHttpContextAccessor httpContextAccessor)
+        public UpdateRequestCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateRequestCommandHandler> logger,
+            IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, logger)
         {
             _unitOfWork = unitOfWork;
-            _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> Handle(UpdateRequestCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                await _unitOfWork.BeginTransaction();
-
-                if (!Guid.TryParse(_httpContextAccessor.HttpContext.User.Claims.First(i => i.Type == "id").Value,
-                    out var requestorId))
+                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id, GetCurrentUserId());
+                if (leaveRequest == null)
                 {
+                    _logger.LogError("Request not found");
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
-
-                var leaveRequest = await _unitOfWork.leaveRequestRepository.FindAsync(request.Id, requestorId);
-                if (leaveRequest == null) throw new HttpResponseException(HttpStatusCode.NotFound);
 
                 leaveRequest.Update(request.DayOffStart,
                     request.DayOffEnd,
                     request.CompensationDayStart,
                     request.CompensationDayEnd,
                     request.Message);
-                return await _unitOfWork.CommitTransaction();
+
+                return await _unitOfWork.SaveChangeAsync();
             }
             catch (Exception e)
             {
-                await _unitOfWork.RollbackTransaction();
                 _logger.LogError(e.Message);
-                throw new HttpResponseException(HttpStatusCode.BadRequest, "Something went wrong!");
+                throw;
             }
         }
     }
