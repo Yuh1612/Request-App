@@ -4,7 +4,6 @@ using Dapper;
 using Request.Domain.Entities.Requests;
 using Request.Domain.Entities.Users;
 using Request.Infrastructure.Data;
-using System.Linq;
 using System.Net;
 
 namespace Request.API.Applications.Queries
@@ -13,15 +12,18 @@ namespace Request.API.Applications.Queries
     {
         private readonly ApplicationDbContext _dbContext;
         protected readonly IHttpContextAccessor _contextAccessor;
+        private readonly ILogger<RequestQueries> _logger;
         private readonly IMapper _mapper;
 
         public RequestQueries(ApplicationDbContext dbContext,
             IMapper mapper,
-            IHttpContextAccessor contextAccessor)
+            IHttpContextAccessor contextAccessor,
+            ILogger<RequestQueries> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _contextAccessor = contextAccessor;
+            _logger = logger;
         }
 
         public async Task<List<LeaveRequestResponse>> GetLeaveRequestByRequestorId()
@@ -54,14 +56,14 @@ namespace Request.API.Applications.Queries
                         requestEntry = request;
                         requestEntry.Stages = new List<Stage>();
                         requestDictionary.Add(requestEntry.Id, requestEntry);
+                        requestEntry.Status = status;
+                        requestEntry.Approver = user;
                     }
 
                     requestEntry.Stages.Add(stage);
-                    requestEntry.Status = status;
-                    requestEntry.Approver = user;
                     return requestEntry;
                 }, new { requestorId = GetCurrentUserId() });
-            return MapperLeaveRequests(results.Distinct().ToList());
+            return MapperLeaveRequests(results.ToList());
         }
 
         public async Task<List<LeaveRequestResponse>> GetLeaveRequestByApproverId()
@@ -94,14 +96,14 @@ namespace Request.API.Applications.Queries
                         requestEntry = request;
                         requestEntry.Stages = new List<Stage>();
                         requestDictionary.Add(requestEntry.Id, requestEntry);
+                        requestEntry.Status = status;
+                        requestEntry.Approver = user;
                     }
 
                     requestEntry.Stages.Add(stage);
-                    requestEntry.Status = status;
-                    requestEntry.Approver = user;
                     return requestEntry;
                 }, new { approverId = GetCurrentUserId() });
-            return MapperLeaveRequests(results.Where(c => c.Stages.Count(c => c.Name == StageEnum.Finish) == 0).Distinct().ToList());
+            return MapperLeaveRequests(results.Where(c => c.Stages.Count(c => c.Name == StageEnum.Finish) == 0).ToList());
         }
 
         public List<LeaveRequestResponse> MapperLeaveRequests(List<LeaveRequest> results)
@@ -116,7 +118,7 @@ namespace Request.API.Applications.Queries
                 leaveRequestReponse.ApproverId = item.Approver.Id;
                 leaveRequestReponse.ApproverName = item.Approver.UserName;
                 leaveRequestReponse.Name = item.Name;
-                leaveRequestReponse.StageName = item.Stages.First().Name;
+                leaveRequestReponse.StageName = item.Stages.Last().Name;
                 leaveRequestReponse.CreatedAt = item.CreatedAt;
                 leaveRequestReponse.UpdatedAt = item.UpdatedAt;
                 leaveRequests.Add(leaveRequestReponse);
@@ -160,21 +162,25 @@ namespace Request.API.Applications.Queries
                         requestEntry = request;
                         requestEntry.Stages = new List<Stage>();
                         requestDictionary.Add(requestEntry.Id, requestEntry);
+                        requestEntry.Status = status;
+                        requestEntry.Approver = approver;
+                        requestEntry.Requestor = requestor;
                     }
 
                     requestEntry.Stages.Add(stage);
-                    requestEntry.Status = status;
-                    requestEntry.Approver = approver;
-                    requestEntry.Requestor = requestor;
                     return requestEntry;
                 }, new
                 {
                     id = id,
                     userId = GetCurrentUserId()
                 });
-            if (results.AsList().Count == 0)
+            var leaveRequests = results.ToList();
+            if (leaveRequests.Count() == 0)
+            {
+                _logger.LogError("Not found Leave request", nameof(RequestQueries));
                 throw new KeyNotFoundException();
-            return MapperLeaveRequest(results.Distinct().ToList().First());
+            }
+            return MapperLeaveRequest(leaveRequests[0]);
         }
 
         public LeaveRequestDetail MapperLeaveRequest(LeaveRequest result)
