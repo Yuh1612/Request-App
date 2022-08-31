@@ -24,18 +24,6 @@ namespace Request.API.Applications.Commands
 
         public async Task<bool> Handle(CreateRequestCommand request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                _logger.LogWarning("Requestor is null!");
-                throw new HttpResponseException(HttpStatusCode.NotFound, "Request is null!");
-            }
-
-            if (request.ApproverId == Guid.Empty)
-            {
-                _logger.LogWarning("Approver is null!");
-                throw new HttpResponseException(HttpStatusCode.NotFound, "Approver is null!");
-            }
-
             try
             {
                 await _unitOfWork.BeginTransaction();
@@ -54,7 +42,7 @@ namespace Request.API.Applications.Commands
                         request.CompensationDayEnd,
                         request.Message);
                 var status = await _unitOfWork.statusRepository.GetStatusByName(StatusEnum.Waiting);
-                leaveRequest.UpdateStatus(status.Id);
+                leaveRequest.StatusId = status.Id;
                 leaveRequest.AddStage(StageEnum.Process, "Chờ Minh Trí Lê");
                 await _unitOfWork.leaveRequestRepository.InsertAsync(leaveRequest);
                 return await _unitOfWork.CommitTransaction();

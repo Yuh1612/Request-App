@@ -23,22 +23,6 @@ namespace Request.API.Applications.Commands
 
         public async Task<bool> Handle(UpdateRequestCommand request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                _logger.LogWarning("Request is null!");
-                throw new HttpResponseException(HttpStatusCode.NotFound, "Request is null!");
-            }
-            if (request.DayOffStart == null)
-            {
-                _logger.LogWarning("Day-off start is null!");
-                throw new HttpResponseException(HttpStatusCode.NotFound, "Day-off start is null!");
-            }
-            if (request.DayOffEnd == null)
-            {
-                _logger.LogWarning("Day-off end is null!");
-                throw new HttpResponseException(HttpStatusCode.NotFound, "Day-off end is null!");
-            }
-
             try
             {
                 await _unitOfWork.BeginTransaction();

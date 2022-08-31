@@ -38,9 +38,13 @@ namespace Request.API.Applications.Commands
                 if (leaveRequest == null) throw new HttpResponseException(HttpStatusCode.NotFound, "Request not found");
 
                 var status = await _unitOfWork.statusRepository.FindAsync(request.StatusId);
-                if (status == null) throw new HttpResponseException(HttpStatusCode.NotFound, "Status not found");
+                if (status == null)
+                {
+                    _logger.LogError("status is null");
+                    throw new HttpResponseException(HttpStatusCode.NotFound, "Status not found");
+                }
 
-                leaveRequest.UpdateStatus(status.Id);
+                leaveRequest.StatusId = status.Id;
                 leaveRequest.AddStage(StageEnum.Finish, request.Description);
                 _unitOfWork.leaveRequestRepository.Update(leaveRequest);
 
