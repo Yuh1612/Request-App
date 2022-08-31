@@ -44,11 +44,6 @@
             this.Message = message ?? Message;
         }
 
-        public void UpdateStatus(Guid statusId)
-        {
-            this.StatusId = statusId;
-        }
-
         public void AddStage(Stage stage)
         {
             this.Stages.Add(stage);
